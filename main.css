@@ -80,3 +80,7 @@ body
 #urlsBeingSearched li:nth-child(even) {
     background-color: #f8f8f8
 }
+
+#allCookies {
+    white-space: pre;
+}
