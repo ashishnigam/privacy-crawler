@@ -60,8 +60,6 @@ function refreshPage()
         })
     });
 
-    $("#urlsBeingSearched li:even").css("background-color", "#f8f8f8");
-
     // If we are done then stop the crawl now
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 }

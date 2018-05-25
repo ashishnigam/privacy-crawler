@@ -76,3 +76,7 @@ body
     margin:auto;
     overflow:hidden;
 }
+
+#urlsBeingSearched li:nth-child(even) {
+    background-color: #f8f8f8
+}
