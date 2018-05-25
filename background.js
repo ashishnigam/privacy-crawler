@@ -73,7 +73,6 @@ async function crawlPage(page)
 
     var cookies = await getCookies();
     onCrawlPageLoaded(page, links.links, cookies);
-    crawlMore();
 }
 
 function onCrawlPageLoaded(page, links, cookies)
@@ -114,10 +113,9 @@ function onCrawlPageLoaded(page, links, cookies)
     });
 }
 
-function crawlMore() {   
-    if (appState != "crawling") return;
-    while (getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
-        crawlPage(getURLsInTab("Queued")[0]);
+async function crawlMore() {
+    while (appState == "crawling" && getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
+        await crawlPage(getURLsInTab("Queued")[0]);
     }
 }
 
