@@ -23,10 +23,9 @@ function crawlPage(page)
     
     console.log("Starting Crawl --> "+JSON.stringify(page));
 
-    function gotDom(domContent) {
-        console.log('gotDom', domContent);
+    function gotLinks(links) {
         console.log('error',  chrome.runtime.lastError);
-        onCrawlPageLoaded(page, domContent);
+        onCrawlPageLoaded(page, links.links);
         chrome.cookies.getAll({}, function(cookies) {
             console.log(cookies); 
         });
@@ -37,7 +36,7 @@ function crawlPage(page)
 
         chrome.tabs.onUpdated.addListener(function (tabId , info) {
            if (info.status === 'complete') {
-             chrome.tabs.sendMessage(tabs[0].id, {text: 'get_dom'}, gotDom);    
+             chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);    
            }
         });
 
@@ -47,51 +46,24 @@ function crawlPage(page)
     });
 }
 
-function onCrawlPageLoaded(page,data)
+function onCrawlPageLoaded(page, links)
 {   
-    // Grab all the links on this page
-    var links = getAllLinksOnPage(data.dom);    
-    console.log('links', links)
     // We want to count some of the following
     var counts = {roots:0, scripts:0, badProtocols:0, newValids:0, oldValids:0, domWindows:0}
     
     // Loop through each
-    $(links).each(function()
+    links.forEach(function(linkURL)
     {
-        var linkURL = this+"";  
         var absoluteURL = linkURL;  
         var parsed = parseUri(linkURL);
         var protocol = parsed["protocol"];                  
-
-        if(linkURL == "[object DOMWindow]")
-        {
-            counts.domWindows++;
-            return true; 
-        }
-        else if(startsWith(linkURL,"/"))
-        {
-             absoluteURL = page.host+"/"+linkURL;
-             counts.roots++;
-        }
-        else if(protocol=="")
-        {
-             absoluteURL = page.url+"/../"+linkURL;
-             counts.roots++;
-        }
-        else if(protocol=="javascript")
-        {
-             //console.log("Not Crawling URL, cannot follow javascript --- "+hrefURL); 
-             counts.scripts++;
-             return true; 
-        }       
-        else if(protocol!="http" && protocol!="https")
-        {
-             //console.log("Not crawling URL, unknown protocol --- "+JSON.stringify({protocol:protocol, url:hrefURL})); 
+       
+        if (protocol != "http" && protocol != "https")
+        { 
              counts.badProtocols++;
              return true; 
         }
-            
-        if(!allPages[absoluteURL])
+        else if(!allPages[absoluteURL])
         {           
             // Increment the count
             counts.newValids++;
