@@ -74,11 +74,11 @@ function onCrawlPageLoaded(page, links, cookies)
     newCookies.forEach(function(cookie) {
         allCookiesSeen[cookieKey(cookie)] = true
         allCookies.push({
-            firstSeen: page.url,
             domain: cookie.domain,
             path: cookie.path,
             name: cookie.name,
-            expirationDate: cookie.session ? 'session' : moment.unix(cookie.expirationDate).fromNow(true)
+            expirationDate: cookie.session ? 'session' : moment.unix(cookie.expirationDate).fromNow(true),
+            firstSeen: page.url
         })
     });
 
