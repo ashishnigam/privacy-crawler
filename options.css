@@ -8,14 +8,14 @@
   to { top: -55px; } 
 }
 .slideUp {
-	-webkit-animation-name:slide-up-status;	
-  	-webkit-animation-duration: 2s;
-  	-webkit-animation-iteration-count: 1;
+    -webkit-animation-name:slide-up-status; 
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: 1;
 }
 .slideDown {
-	-webkit-animation-name:slide-down-status;	
-  	-webkit-animation-duration: 1s;
-  	-webkit-animation-iteration-count: 1;
+    -webkit-animation-name:slide-down-status;   
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: 1;
 }
 
 body {
@@ -64,54 +64,54 @@ span.desc-text {
 }
 
 div#status {
-	position:fixed;
-	height:32px;
-	width:220px;
-	margin-left:-110px;
-	top:0;
-	left:50%;
-	padding:4px;
-	z-index:1001;
-	font-size:15px;
-	color:#000;
-	background-color:#ebeff9;
-	display:none;
-	text-align:center;
-	text-shadow: 1px 2px 3px #b5c7de;
-	-webkit-border-bottom-left-radius:5px;
-	-webkit-border-bottom-right-radius:5px;
-	border-right:1px solid #b5c7de;
-	border-bottom:1px solid #b5c7de;
-	border-left:1px solid #b5c7de;
+    position:fixed;
+    height:32px;
+    width:220px;
+    margin-left:-110px;
+    top:0;
+    left:50%;
+    padding:4px;
+    z-index:1001;
+    font-size:15px;
+    color:#000;
+    background-color:#ebeff9;
+    display:none;
+    text-align:center;
+    text-shadow: 1px 2px 3px #b5c7de;
+    -webkit-border-bottom-left-radius:5px;
+    -webkit-border-bottom-right-radius:5px;
+    border-right:1px solid #b5c7de;
+    border-bottom:1px solid #b5c7de;
+    border-left:1px solid #b5c7de;
 }
 
 ul.links {
-	padding:0; 
-	margin:0; 
-	width:200px;
-	float:left;
+    padding:0; 
+    margin:0; 
+    width:200px;
+    float:left;
 }
 
 ul.links li {
-	list-style-type:none;
+    list-style-type:none;
 }
 
 ul.horizontal-links {
-	padding:0; 
-	margin:0; 
-	white-space:nowrap;
-	list-style-type:none;
+    padding:0; 
+    margin:0; 
+    white-space:nowrap;
+    list-style-type:none;
 }
 
 ul.horizontal-links li {
-	display:inline;
-	float:left;
+    display:inline;
+    float:left;
 }
 
 ul.horizontal-links li a {
-	padding: 0.2em 1em;
+    padding: 0.2em 1em;
 }
 
 .fix {
-	clear:both;
+    clear:both;
 }
