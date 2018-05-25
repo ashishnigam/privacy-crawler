@@ -80,7 +80,9 @@ function crawlPage(page)
             };
        });
     }).then(cookiesLinks => {
-        onCrawlPageLoaded(page, cookiesLinks.links, cookiesLinks.cookies);
+        return onCrawlPageLoaded(page, cookiesLinks.links, cookiesLinks.cookies);
+    }).then(() => {
+        crawlMore();
     });
 }
 
@@ -120,9 +122,6 @@ function onCrawlPageLoaded(page, links, cookies)
             firstSeen: page.url
         })
     });
-
-    // Check to see if anything else needs to be crawled
-    crawlMore();    
 }
 
 function crawlMore() 
