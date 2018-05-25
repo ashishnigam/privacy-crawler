@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
         copyToClipboard($('#cookies-csv').text())
+        $(e.target).after('<span>Copied to clipboard</span>');
+
         e.preventDefault();
     });
 
