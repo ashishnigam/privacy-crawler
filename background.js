@@ -1,7 +1,6 @@
 var tabs = ["Queued","Crawling","Crawled","Errors"];
 var allPages = {};
 var crawlStartURL = null;
-var startingHost = "";
 var startingPage = {};
 var appState = "stopped";
 
@@ -10,8 +9,7 @@ function beginCrawl(url)
     reset();    
     appState = "crawling";
     crawlStartURL = url;    
-    startingHost = parseUri(url)["protocol"] + "://" + parseUri(url)["host"];
-    allPages[url] = {url:url, state:"queued", depth:0, host:startingHost, parsed:parseUri(url)};
+    allPages[url] = {url:url, state:"queued", depth:0, parsed:parseUri(url)};
     startingPage = allPages[url];
     crawlMore();
 }
@@ -67,8 +65,7 @@ function onCrawlPageLoaded(page, links)
             var o = {
                 depth: page.depth+1,
                 url: absoluteURL,
-                state: page.depth == settings.maxDepth ? "max_depth" : "queued",
-                host: protocol + "://" + parsed["host"]
+                state: page.depth == settings.maxDepth ? "max_depth" : "queued"
             };
 
             //console.log(JSON.stringify(o));
