@@ -49,7 +49,7 @@ function crawlPage(page)
 function onCrawlPageLoaded(page, links)
 {   
     // We want to count some of the following
-    var counts = {roots:0, scripts:0, badProtocols:0, newValids:0, oldValids:0, domWindows:0}
+    var counts = {newValids:0}
     
     // Loop through each
     links.forEach(function(linkURL)
@@ -57,13 +57,8 @@ function onCrawlPageLoaded(page, links)
         var absoluteURL = linkURL;  
         var parsed = parseUri(linkURL);
         var protocol = parsed["protocol"];                  
-       
-        if (protocol != "http" && protocol != "https")
-        { 
-             counts.badProtocols++;
-             return true; 
-        }
-        else if(!allPages[absoluteURL])
+
+        if ((protocol == "http" || protocol == "https") && !allPages[absoluteURL])
         {           
             // Increment the count
             counts.newValids++;
@@ -73,17 +68,13 @@ function onCrawlPageLoaded(page, links)
                 depth: page.depth+1,
                 url: absoluteURL,
                 state: page.depth == settings.maxDepth ? "max_depth" : "queued",
-                host: parseUri(absoluteURL)["protocol"] + "://" + parseUri(absoluteURL)["host"]
+                host: protocol + "://" + parsed["host"]
             };
 
             //console.log(JSON.stringify(o));
 
             // Save the page in our master array
             allPages[absoluteURL] = o;      
-        }
-        else
-        {
-            counts.oldValids++;
         }
         
     });
