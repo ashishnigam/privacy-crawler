@@ -79,7 +79,7 @@ function refreshPage()
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 
     if (currentTab == 'Cookies') {
-        var html = '<div><button class="cookies-copy-to-clipboard">Copy CSV to clipboard</button></div>';
+        var html = '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>';
         html += '<div id="cookies-csv">';
 
         var keys = [];
@@ -90,12 +90,12 @@ function refreshPage()
                 }
             })
         });
-        html += keys.join(',') + '\n';
+        html += keys.join('\t') + '\n';
 
         html += bgPage.allCookies.map(function(cookie) {
             return keys.map(function(key) {
                 return (key in cookie) ? cookie[key] : '';
-            }).join(',') + '\n';
+            }).join('\t') + '\n';
         }).join('');
         html += '</div>'
         $('#allCookies').html(html)
