@@ -19,6 +19,7 @@
    "name": "Cookie Crawler",
    "permissions": [
       "activeTab",
+      "clipboardWrite",
       "cookies",
       "tabs",
       "http://*/*",

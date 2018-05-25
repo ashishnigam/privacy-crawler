@@ -7,6 +7,12 @@ var bgPage = chrome.extension.getBackgroundPage();
 document.addEventListener('DOMContentLoaded', function() {
     $('#crawlButton').on('click', onCrawlClicked);
     $('#resetButton').on('click', onResetClicked);
+
+    $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
+        copyToClipboard($('#cookies-csv').text())
+        e.preventDefault();
+    });
+
     onLoad();
 }, false);
 
@@ -71,10 +77,12 @@ function refreshPage()
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 
     if (currentTab == 'Cookies') {
-        var html = '';
+        var html = '<div><button class="cookies-copy-to-clipboard">Copy CSV to clipboard</button></div>';
+        html += '<div id="cookies-csv">';
         bgPage.allCookies.forEach(function(cookie) {
             html += Object.values(cookie).join(',') + '\n'
         })
+        html += '</div>'
         $('#allCookies').html(html)
     } else {
         $('#allCookies').html('');
