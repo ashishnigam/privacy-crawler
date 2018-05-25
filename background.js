@@ -77,7 +77,6 @@ async function crawlPage(page)
 
 function onCrawlPageLoaded(page, links, cookies)
 {   
-    // Loop through each
     var newLinks = links.filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
     })
@@ -88,11 +87,9 @@ function onCrawlPageLoaded(page, links, cookies)
             state: page.depth == settings.maxDepth ? "max_depth" : "queued"
         }
     });
-    
-    // Debugging is good
+
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
-    
-    // This page is crawled
+
     allPages[page.url].state = "crawled";  
 
     function cookieKey(cookie) {
