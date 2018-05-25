@@ -97,11 +97,12 @@ function onCrawlPageLoaded(page,data)
             counts.newValids++;
             
             // Build the page object
-            var o = {};
-            o.depth = page.depth+1;
-            o.url = absoluteURL;
-            o.state = page.depth==settings.maxDepth?"max_depth":"queued";
-            o.host = parseUri(o.url)["protocol"] + "://" + parseUri(o.url)["host"];
+            var o = {
+                depth: page.depth+1,
+                url: absoluteURL,
+                state: page.depth == settings.maxDepth ? "max_depth" : "queued",
+                host: parseUri(absoluteURL)["protocol"] + "://" + parseUri(absoluteURL)["host"]
+            };
 
             //console.log(JSON.stringify(o));
 
