@@ -14,8 +14,13 @@ document.addEventListener('DOMContentLoaded', function() {
 function onLoad() 
 {   
     var u = bgPage.crawlStartURL;
-    if(!u || u=="") { chrome.tabs.getSelected(null,function(tab) { $("#crawUrl").val(tab.url); }); }
-    else { $("#crawUrl").val(u); }
+    if (!u || u == "") {
+        chrome.tabs.getSelected(null, function(tab) {
+            $("#crawUrl").val(tab.url);
+        });
+    } else {
+        $("#crawUrl").val(u);
+    }
 
     $("#maxDepth").val(settings.maxDepth);
     refreshPage();
