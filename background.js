@@ -48,7 +48,10 @@ function crawlPage(page)
 	function gotDom(domContent) {
 		console.log('gotDom', domContent);
 		console.log('error',  chrome.runtime.lastError);
-		onCrawlPageLoaded(page, domContent)
+		onCrawlPageLoaded(page, domContent);
+        chrome.cookies.getAll({}, function(cookies) {
+            console.log(cookies); 
+        });
 	}
 
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {

@@ -20,6 +20,7 @@
    "options_page": "options.html",
    "permissions": [
       "activeTab",
+      "cookies",
       "tabs",
       "http://*/*",
       "https://*/*"
