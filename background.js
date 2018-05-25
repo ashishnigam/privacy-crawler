@@ -59,13 +59,6 @@ function crawlPage(page)
     
     console.log("Starting Crawl --> "+JSON.stringify(page));
 
-    function gotLinks(links) {
-        console.log('error',  chrome.runtime.lastError);
-        getCookies().then((cookies) => {
-            onCrawlPageLoaded(page, links.links, cookies);
-        })
-    }
-
     tabQuery({active: true, currentWindow: true}).then((tabs) => {
         chrome.tabs.update(tabs[0].id, {
             url: page.url
@@ -74,7 +67,12 @@ function crawlPage(page)
             return tabs[0].id;
         });
     }).then((tabId) => {
-        sendMessage(tabId, {text: 'get_links'}).then(gotLinks);
+        return sendMessage(tabId, {text: 'get_links'});
+    }).then((links) => {
+        console.log('error',  chrome.runtime.lastError);
+        getCookies().then((cookies) => {
+            onCrawlPageLoaded(page, links.links, cookies);
+        });
     });
 }
 
