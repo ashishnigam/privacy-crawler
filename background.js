@@ -14,10 +14,7 @@ var settings =
 {
     get maxDepth() { return localStorage["max-crawl-depth"]!=null?localStorage["max-crawl-depth"]:2; },
     set maxDepth(val) { localStorage['max-crawl-depth'] = val; },
-	
-	get maxSimultaniousCrawls() { return localStorage["max-page-loads"]!=null?localStorage["max-page-loads"]:10; },
-    set maxSimultaniousCrawls(val) { localStorage['max-page-loads'] = val; },
-	
+
 	get pauseOnPopClose() { return localStorage["pause-popup-close"]!=null?localStorage["pause-popup-close"]:1; },
     set pauseOnPopClose(val) { localStorage['pause-popup-close'] = val; },
 	
@@ -150,7 +147,7 @@ function onCrawlPageLoaded(page,data)
 function crawlMore() 
 {	
 	if(appState!="crawling"){ return; }
-	while(getURLsInTab("Crawling").length<settings.maxSimultaniousCrawls && getURLsInTab("Queued").length>0)
+	while(getURLsInTab("Crawling").length<1 && getURLsInTab("Queued").length>0)
 	{
 		crawlPage(getURLsInTab("Queued")[0]);
 	}
