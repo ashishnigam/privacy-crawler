@@ -84,9 +84,6 @@ function onCrawlPageLoaded(page, links)
     
     // Check to see if anything else needs to be crawled
     crawlMore();    
-    
-    // Render the changes
-    //refreshPage();
 }
 
 function crawlMore() 
