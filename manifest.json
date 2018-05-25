@@ -12,11 +12,11 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
    }],
-   "description": "Crawl a url for interesting links!",
+   "description": "Crawls a site to find all cookies",
    "icons": {
       "48": "images/icon48.png"
    },
-   "name": "Chrome Crawler",
+   "name": "Cookie Crawler",
    "options_page": "options.html",
    "permissions": [
       "activeTab",
