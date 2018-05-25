@@ -46,16 +46,13 @@ function crawlPage(page)
 function onCrawlPageLoaded(page, links)
 {   
     // We want to count some of the following
-    var counts = {newValids:0}
+    var originalCount = allPages.length;
     
     // Loop through each
     links.forEach(function(linkURL)
     {
         if (startsWith(linkURL, startingPage.url) && !allPages[linkURL])
-        {           
-            // Increment the count
-            counts.newValids++;
-            
+        {    
             // Build the page object
             var o = {
                 depth: page.depth+1,
@@ -72,7 +69,7 @@ function onCrawlPageLoaded(page, links)
     });
     
     // Debugging is good
-    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:counts}));
+    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:(allPages.length - originalCount)}));
     
     // This page is crawled
     allPages[page.url].state = "crawled";       
