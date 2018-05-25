@@ -61,12 +61,12 @@ function crawlPage(page)
     }
 
     tabQuery({active: true, currentWindow: true}).then((tabs) => {
-        onTabStatusComplete(tabs[0].id).then(() => {
-            chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);
-        });
-
         chrome.tabs.update(tabs[0].id, {
             url: page.url
+        });
+
+        onTabStatusComplete(tabs[0].id).then(() => {
+            chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);
         });
     });
 }
