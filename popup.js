@@ -34,7 +34,8 @@ function refreshPage()
     // Build each tab
     $(bgPage.tabs).each(function(i, tab)
     {
-        var innerTxt = tab + " ("+bgPage.getURLsInTab(tab).length+")";
+        var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
+        var innerTxt = tab + " ("+ count +")";
         var liTxt = tab==currentTab?innerTxt:"<a href='#' id=\"openTabButton-"+ i +"\" >"+innerTxt+"</a>";
         $("#tabs").append("<li>"+liTxt+"</li>");
         $("#openTabButton-"+i).bind('click', function() {
@@ -64,6 +65,12 @@ function refreshPage()
 
     // If we are done then stop the crawl now
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
+
+    if (currentTab == 'Cookies') {
+        $('#allCookies').text(JSON.stringify(bgPage.allCookies))
+    } else {
+        $('#allCookies').html('');
+    }
 }
 
 

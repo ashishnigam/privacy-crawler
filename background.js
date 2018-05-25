@@ -1,5 +1,6 @@
-var tabs = ["Queued","Crawling","Crawled","Errors"];
+var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
+var allCookies = [];
 var crawlStartURL = null;
 var startingPage = {};
 var appState = "stopped";
@@ -22,9 +23,8 @@ function crawlPage(page)
 
     function gotLinks(links) {
         console.log('error',  chrome.runtime.lastError);
-        onCrawlPageLoaded(page, links.links);
         chrome.cookies.getAll({}, function(cookies) {
-            console.log(cookies); 
+            onCrawlPageLoaded(page, links.links, cookies);
         });
     }
 
@@ -43,7 +43,7 @@ function crawlPage(page)
     });
 }
 
-function onCrawlPageLoaded(page, links)
+function onCrawlPageLoaded(page, links, cookies)
 {   
     // Loop through each
     var newLinks = links.filter(function(linkURL) {
@@ -61,7 +61,8 @@ function onCrawlPageLoaded(page, links)
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
     
     // This page is crawled
-    allPages[page.url].state = "crawled";       
+    allPages[page.url].state = "crawled";  
+    allCookies = cookies;     
     
     // Check to see if anything else needs to be crawled
     crawlMore();    
@@ -93,4 +94,5 @@ function getURLsInTab(tab)
 function reset() 
 {
     allPages = {};  
+    allCookies = [];
 }
