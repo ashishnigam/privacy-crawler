@@ -19,10 +19,6 @@ function onLoad()
     refreshPage();
 }   
 
-
-//function refreshPage(force) { refreshNeeded = true; if(force){onRefreshTick();} } 
-//function refreshPage(force) { onRefreshTick(); }  
-
 function refreshPage() 
 {
     // Start the timer again
