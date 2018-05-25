@@ -70,9 +70,14 @@ function crawlPage(page)
         return sendMessage(tabId, {text: 'get_links'});
     }).then((links) => {
         console.log('error',  chrome.runtime.lastError);
-        getCookies().then((cookies) => {
-            onCrawlPageLoaded(page, links.links, cookies);
-        });
+        return getCookies().then((cookies) => {
+            return {
+                cookies: cookies,
+                links: links.links
+            };
+       });
+    }).then(cookiesLinks => {
+        onCrawlPageLoaded(page, cookiesLinks.links, cookiesLinks.cookies);
     });
 }
 
