@@ -84,3 +84,7 @@ body
 #allCookies {
     white-space: pre;
 }
+
+#cookies-csv {
+    overflow-x: scroll;
+}
