@@ -60,8 +60,6 @@ function onCrawlPageLoaded(page, links)
                 state: page.depth == settings.maxDepth ? "max_depth" : "queued"
             };
 
-            //console.log(JSON.stringify(o));
-
             // Save the page in our master array
             allPages[linkURL] = o;      
         }
