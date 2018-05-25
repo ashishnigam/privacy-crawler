@@ -34,8 +34,8 @@ function refreshPage()
     // Build each tab
     $(bgPage.tabs).each(function(i, tab)
     {
-        var innerTxt = this+" ("+bgPage.getURLsInTab(this).length+")";
-        var liTxt = this==currentTab?innerTxt:"<a href='#' id=\"openTabButton-"+ i +"\" >"+innerTxt+"</a>";
+        var innerTxt = tab + " ("+bgPage.getURLsInTab(tab).length+")";
+        var liTxt = tab==currentTab?innerTxt:"<a href='#' id=\"openTabButton-"+ i +"\" >"+innerTxt+"</a>";
         $("#tabs").append("<li>"+liTxt+"</li>");
         $("#openTabButton-"+i).bind('click', function() {
             openTab(tab);
