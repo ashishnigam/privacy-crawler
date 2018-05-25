@@ -129,7 +129,7 @@ function getURLsInTab(tab)
     for(var ref in allPages) 
     {
         var o = allPages[ref];
-        if(tab=="Queued" && o.state=="queued" && !o.isFile){ tabUrls.push(o); }
+        if(tab=="Queued" && o.state=="queued"){ tabUrls.push(o); }
         else if(tab=="Crawling" && o.state=="crawling"){ tabUrls.push(o); }
         else if(tab=="Crawled" && o.state=="crawled"){ tabUrls.push(o); }
         else if(tab=="Errors" && o.state=="error"){ tabUrls.push(o); }  
