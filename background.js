@@ -2,7 +2,7 @@ var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
-var crawlStartURL = null;
+var crawlStartURL = settings.root;
 var startingPage = {};
 var appState = "stopped";
 
@@ -10,6 +10,7 @@ function beginCrawl(url)
 {   
     reset();    
     appState = "crawling";
+    settings.root = url;
     crawlStartURL = url;    
     allPages[url] = {url:url, state:"queued", depth:0};
     startingPage = allPages[url];
