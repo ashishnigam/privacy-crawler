@@ -51,9 +51,7 @@ function onCrawlPageLoaded(page, links)
     // Loop through each
     links.forEach(function(linkURL)
     {
-        var absoluteURL = linkURL;              
-
-        if (startsWith(linkURL, startingPage.url) && !allPages[absoluteURL])
+        if (startsWith(linkURL, startingPage.url) && !allPages[linkURL])
         {           
             // Increment the count
             counts.newValids++;
@@ -61,14 +59,14 @@ function onCrawlPageLoaded(page, links)
             // Build the page object
             var o = {
                 depth: page.depth+1,
-                url: absoluteURL,
+                url: linkURL,
                 state: page.depth == settings.maxDepth ? "max_depth" : "queued"
             };
 
             //console.log(JSON.stringify(o));
 
             // Save the page in our master array
-            allPages[absoluteURL] = o;      
+            allPages[linkURL] = o;      
         }
         
     });
