@@ -46,15 +46,6 @@ function getAllLinksOnPage(page)
 	return links;
 }
 
-/*
-function getInterestingFileTypes()
-{
-	var types = (localStorage["interesting-file-types"]?localStorage["interesting-file-types"]:"flv,mk4,avi,mp3,zip,png,gif,jpg").split(",");
-	for (var i in types) { types[i] = $.trim(types[i]);	 }
-	return types;
-}
-*/
-
 function isInArr(arr,val)
 {
 	for (var i in arr)
