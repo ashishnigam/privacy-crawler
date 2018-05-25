@@ -56,34 +56,24 @@ function sendMessage(tabId, message) {
     });
 }
 
-function crawlPage(page)
+async function crawlPage(page)
 {
     page.state = "crawling";
     
     console.log("Starting Crawl --> "+JSON.stringify(page));
 
-    tabQuery({active: true, currentWindow: true}).then((tabs) => {
-        chrome.tabs.update(tabs[0].id, {
-            url: page.url
-        });
-        return onTabStatusComplete(tabs[0].id).then(() => {
-            return tabs[0].id;
-        });
-    }).then((tabId) => {
-        return sendMessage(tabId, {text: 'get_links'});
-    }).then((links) => {
-        console.log('error',  chrome.runtime.lastError);
-        return getCookies().then((cookies) => {
-            return {
-                cookies: cookies,
-                links: links.links
-            };
-       });
-    }).then(cookiesLinks => {
-        return onCrawlPageLoaded(page, cookiesLinks.links, cookiesLinks.cookies);
-    }).then(() => {
-        crawlMore();
+    var tabs = await tabQuery({active: true, currentWindow: true});
+    chrome.tabs.update(tabs[0].id, {
+        url: page.url
     });
+    await onTabStatusComplete(tabs[0].id);
+
+    var links = await sendMessage(tabs[0].id, {text: 'get_links'});
+    console.log('error',  chrome.runtime.lastError);
+
+    var cookies = await getCookies();
+    onCrawlPageLoaded(page, links.links, cookies);
+    crawlMore();
 }
 
 function onCrawlPageLoaded(page, links, cookies)
