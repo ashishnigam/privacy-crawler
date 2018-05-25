@@ -125,16 +125,12 @@ function crawlMore()
 
 function getURLsInTab(tab)
 {
-    var tabUrls = [];   
-    for(var ref in allPages) 
-    {
-        var o = allPages[ref];
-        if(tab=="Queued" && o.state=="queued"){ tabUrls.push(o); }
-        else if(tab=="Crawling" && o.state=="crawling"){ tabUrls.push(o); }
-        else if(tab=="Crawled" && o.state=="crawled"){ tabUrls.push(o); }
-        else if(tab=="Errors" && o.state=="error"){ tabUrls.push(o); }  
-    };      
-    return tabUrls;
+    return Object.values(allPages).filter((o) => {
+        return (tab=="Queued"   && o.state=="queued")   ||
+               (tab=="Crawling" && o.state=="crawling") ||
+               (tab=="Crawled"  && o.state=="crawled")  ||
+               (tab=="Errors"   && o.state=="error");
+    });
 }
 
 function reset() 
