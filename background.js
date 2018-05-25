@@ -114,11 +114,9 @@ function onCrawlPageLoaded(page, links, cookies)
     });
 }
 
-function crawlMore() 
-{   
-    if(appState!="crawling"){ return; }
-    while(getURLsInTab("Crawling").length<1 && getURLsInTab("Queued").length>0)
-    {
+function crawlMore() {   
+    if (appState != "crawling") return;
+    while (getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
         crawlPage(getURLsInTab("Queued")[0]);
     }
 }
