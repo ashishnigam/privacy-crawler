@@ -2,14 +2,6 @@ var settings =
 {
     get maxDepth() { return localStorage["max-crawl-depth"]!=null?localStorage["max-crawl-depth"]:2; },
     set maxDepth(val) { localStorage['max-crawl-depth'] = val; },
-    
-    get interestingFileTypes() 
-    { 
-        var types = (localStorage["interesting-file-types"]!=null?localStorage["interesting-file-types"]:"flv,mk4,ogg,swf,avi,mp3,zip,png,gif,jpg").split(",");
-        for (var i in types) { types[i] = $.trim(types[i]);  }
-        return types;
-    },
-    set interestingFileTypes(val) { localStorage['interesting-file-types'] = val; }
 }
 
 function parseUri (str) 
@@ -45,11 +37,6 @@ parseUri.options =
 
 function startsWith(s, str){
     return (s.indexOf(str) === 0);
-}
-
-function getFileExt(filename) 
-{
-    return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined; 
 }
 
 function getAllLinksOnPage(page)

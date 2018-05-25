@@ -1,4 +1,4 @@
-var tabs = ["Queued","Crawling","Crawled","Files","Errors"];
+var tabs = ["Queued","Crawling","Crawled","Errors"];
 var allPages = {};
 var crawlStartURL = null;
 var startingHost = "";
@@ -53,7 +53,7 @@ function onCrawlPageLoaded(page,data)
     var links = getAllLinksOnPage(data.dom);    
     console.log('links', links)
     // We want to count some of the following
-    var counts = {roots:0, scripts:0, badProtocols:0, newValids:0, oldValids:0, interestings:0, domWindows:0}
+    var counts = {roots:0, scripts:0, badProtocols:0, newValids:0, oldValids:0, domWindows:0}
     
     // Loop through each
     $(links).each(function()
@@ -102,15 +102,9 @@ function onCrawlPageLoaded(page,data)
             o.url = absoluteURL;
             o.state = page.depth==settings.maxDepth?"max_depth":"queued";
             o.host = parseUri(o.url)["protocol"] + "://" + parseUri(o.url)["host"];
-                                            
-            // Get the file extension
-            var extn = getFileExt(absoluteURL);
-            
+
             //console.log(JSON.stringify(o));
-            
-            // Is this an interesting extension?
-            if(isInArr(settings.interestingFileTypes,extn)) { o.isFile=true; counts.interestings++; }       
-            
+
             // Save the page in our master array
             allPages[absoluteURL] = o;      
         }
@@ -152,7 +146,6 @@ function getURLsInTab(tab)
         if(tab=="Queued" && o.state=="queued" && !o.isFile){ tabUrls.push(o); }
         else if(tab=="Crawling" && o.state=="crawling"){ tabUrls.push(o); }
         else if(tab=="Crawled" && o.state=="crawled"){ tabUrls.push(o); }
-        else if(tab=="Files" && o.isFile){ tabUrls.push(o); }
         else if(tab=="Errors" && o.state=="error"){ tabUrls.push(o); }  
     };      
     return tabUrls;
