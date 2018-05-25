@@ -45,25 +45,20 @@ function crawlPage(page)
 
 function onCrawlPageLoaded(page, links)
 {   
-    // We want to count some of the following
-    var originalCount = allPages.length;
-    
     // Loop through each
-    links.forEach(function(linkURL)
-    {
-        if (startsWith(linkURL, startingPage.url) && !allPages[linkURL])
-        {    
-            allPages[linkURL] = {
-                depth: page.depth+1,
-                url: linkURL,
-                state: page.depth == settings.maxDepth ? "max_depth" : "queued"
-            } 
+    var newLinks = links.filter(function(linkURL) {
+        return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
+    })
+    newLinks.forEach(function(linkURL) {  
+        allPages[linkURL] = {
+            depth: page.depth+1,
+            url: linkURL,
+            state: page.depth == settings.maxDepth ? "max_depth" : "queued"
         }
-        
     });
     
     // Debugging is good
-    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:(allPages.length - originalCount)}));
+    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
     
     // This page is crawled
     allPages[page.url].state = "crawled";       
