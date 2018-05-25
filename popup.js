@@ -16,6 +16,8 @@ function onLoad()
     var u = bgPage.crawlStartURL;
     if(!u || u=="") { chrome.tabs.getSelected(null,function(tab) { $("#crawUrl").val(tab.url); }); }
     else { $("#crawUrl").val(u); }
+
+    $("#maxDepth").val(settings.maxDepth);
     refreshPage();
 }   
 
@@ -89,6 +91,7 @@ function onCrawlClicked()
     else if(bgPage.appState=="stopped" && bgPage.getURLsInTab("Queued").length==0)
     {
         console.log("Beginning Crawl");
+        settings.maxDepth = parseInt($("#maxDepth").val());
         bgPage.beginCrawl($("#crawUrl").val());
     }
     else if(bgPage.appState=="crawling")

@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Saves options to localStorage.
 function save_options() 
 { 
-    bgPage.settings.maxDepth = $("#max-crawl-depth").val();
     bgPage.settings.interestingFileTypes = $("#interesting-file-types").val();
     bgPage.settings.pauseOnPopClose = $("#pause-crawl-popup-close").is(':checked')?1:0;
 }
@@ -17,7 +16,6 @@ function save_options()
 function restore_options() 
 {   
     bgPage = chrome.extension.getBackgroundPage();  
-    $("#max-crawl-depth").val(bgPage.settings.maxDepth);
     $("#interesting-file-types").val(bgPage.settings.interestingFileTypes);
     if(bgPage.settings.pauseOnPopClose==1){$("#pause-crawl-popup-close").attr('checked','checked');}
 }
