@@ -17,6 +17,12 @@ function beginCrawl(url)
     crawlMore();
 }
 
+function tabQuery(query) {
+    return new Promise((resolve, reject) => {
+         chrome.tabs.query(query, resolve);
+    });
+}
+
 function getCookies() {
     return new Promise((resolve, reject) => {
         chrome.cookies.getAll({}, resolve);
@@ -54,7 +60,7 @@ function crawlPage(page)
         })
     }
 
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    tabQuery({active: true, currentWindow: true}).then((tabs) => {
         onTabStatusComplete(tabs[0].id).then(() => {
             chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);
         });
