@@ -70,10 +70,11 @@ function crawlPage(page)
         chrome.tabs.update(tabs[0].id, {
             url: page.url
         });
-
-        onTabStatusComplete(tabs[0].id).then(() => {
-            sendMessage(tabs[0].id, {text: 'get_links'}).then(gotLinks);
+        return onTabStatusComplete(tabs[0].id).then(() => {
+            return tabs[0].id;
         });
+    }).then((tabId) => {
+        sendMessage(tabId, {text: 'get_links'}).then(gotLinks);
     });
 }
 
