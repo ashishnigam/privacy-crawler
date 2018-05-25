@@ -49,29 +49,19 @@ function refreshPage()
     // Set enabledness
     if(bgPage.appState=="crawling"){ $("#crawUrl").attr("disabled", true); $("#resetButton").attr("disabled", true); }
     else { $("#crawUrl").attr("disabled", false); $("#resetButton").attr("disabled", false);}
-        
-    if(currentTab=="X")
+
+    // List all the urls on this tab
+    $(bgPage.getURLsInTab(currentTab)).each(function(i, tab)
     {
-        //$("#infovis").empty();
-        //renderGraph();
-    }
-    else
-    {       
-        // List all the urls on this tab
-        $(bgPage.getURLsInTab(currentTab)).each(function(i, tab)
-        {
-            $("#urlsBeingSearched").append("<li><a href='#' id=\"tab-"+ i + "\">"+this.url+"</a></li>");
-            $("#tab-" + i).bind(function() {
-                onLIURLClicked(tab.url);
-                return false;
-            })
-        });
-        
-        
-        $("#urlsBeingSearched li:even").css("background-color", "#f8f8f8");
-    
-    }
-    
+        $("#urlsBeingSearched").append("<li><a href='#' id=\"tab-"+ i + "\">"+this.url+"</a></li>");
+        $("#tab-" + i).bind(function() {
+            onLIURLClicked(tab.url);
+            return false;
+        })
+    });
+
+    $("#urlsBeingSearched li:even").css("background-color", "#f8f8f8");
+
     // If we are done then stop the crawl now
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 }
