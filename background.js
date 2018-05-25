@@ -17,6 +17,12 @@ function beginCrawl(url)
     crawlMore();
 }
 
+function getCookies() {
+    return new Promise((resolve, reject) => {
+        chrome.cookies.getAll({}, resolve);
+    });
+}
+
 function crawlPage(page)
 {
     page.state = "crawling";
@@ -25,9 +31,9 @@ function crawlPage(page)
 
     function gotLinks(links) {
         console.log('error',  chrome.runtime.lastError);
-        chrome.cookies.getAll({}, function(cookies) {
+        getCookies().then((cookies) => {
             onCrawlPageLoaded(page, links.links, cookies);
-        });
+        })
     }
 
     var getLinksSent = false;
