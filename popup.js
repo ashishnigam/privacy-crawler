@@ -158,9 +158,6 @@ function stopCrawl()
         var o = bgPage.allPages[ref]
         if(o.state=="crawling")
         {           
-            o.request.abort(); 
-            delete o.request; 
-            console.log("AJAX page load aborted -> "+JSON.stringify(o));
             o.state = "queued";
         }
     }
