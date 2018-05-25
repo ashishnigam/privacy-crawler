@@ -53,7 +53,7 @@ function onCrawlPageLoaded(page, links)
     {
         var absoluteURL = linkURL;              
 
-        if ((startsWith(linkURL, "http://") || startsWith(linkURL, "https://")) && !allPages[absoluteURL])
+        if (startsWith(linkURL, startingPage.url) && !allPages[absoluteURL])
         {           
             // Increment the count
             counts.newValids++;
