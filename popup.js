@@ -118,7 +118,6 @@ function onResetClicked()
 {
     stopCrawl();
     bgPage.reset();
-    chrome.tabs.getSelected(null,function(tab) { $("#crawUrl").val(tab.url); })
     refreshPage();
 }
 
