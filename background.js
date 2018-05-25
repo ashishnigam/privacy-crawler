@@ -40,28 +40,37 @@ function beginCrawl(url)
 
 function crawlPage(page)
 {
-
 	page.state = "crawling";
 	page.parsed = parseUri(page.url);
 	
 	console.log("Starting Crawl --> "+JSON.stringify(page));
-	page.request = $.get(page.url, null,  function(data, textStatus)
-	{
-		// Dont forget to remove this reference!
-		delete page.request;
-		
-		// If no data than it was aborted handle here
-		if(!data) {	page.state = "queued"; }
-		else { onCrawlPageLoaded(page,data) ; }
+
+	function gotDom(domContent) {
+		console.log('gotDom', domContent);
+		console.log('error',  chrome.runtime.lastError);
+		onCrawlPageLoaded(page, domContent)
+	}
+
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		console.log('active tabs', tabs);
+
+		chrome.tabs.onUpdated.addListener(function (tabId , info) {
+		   if (info.status === 'complete') {
+		     chrome.tabs.sendMessage(tabs[0].id, {text: 'get_dom'}, gotDom);	
+		   }
+		});
+
+		chrome.tabs.update(tabs[0].id, {
+			url: page.url
+		});
 	});
-	//refreshPage();
 }
 
 function onCrawlPageLoaded(page,data)
 {	
 	// Grab all the links on this page
-	var links = getAllLinksOnPage(data);	
-	
+	var links = getAllLinksOnPage(data.dom);	
+	console.log('links', links)
 	// We want to count some of the following
 	var counts = {roots:0, scripts:0, badProtocols:0, newValids:0, oldValids:0, interestings:0, domWindows:0}
 	
