@@ -19,17 +19,6 @@ function onLoad()
     refreshPage();
 }   
 
-$(window).unload(function() 
-{
-    if(bgPage.settings.pauseOnPopClose==1)
-    {
-        if(bgPage.appState=="crawling")
-        {
-            console.log("Popup Closing Pausing Crawl");
-            stopCrawl();    
-        }
-    }
-});
 
 //function refreshPage(force) { refreshNeeded = true; if(force){onRefreshTick();} } 
 //function refreshPage(force) { onRefreshTick(); }  

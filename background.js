@@ -9,9 +9,6 @@ var settings =
 {
     get maxDepth() { return localStorage["max-crawl-depth"]!=null?localStorage["max-crawl-depth"]:2; },
     set maxDepth(val) { localStorage['max-crawl-depth'] = val; },
-
-    get pauseOnPopClose() { return localStorage["pause-popup-close"]!=null?localStorage["pause-popup-close"]:1; },
-    set pauseOnPopClose(val) { localStorage['pause-popup-close'] = val; },
     
     get interestingFileTypes() 
     { 
