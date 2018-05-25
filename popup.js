@@ -5,11 +5,10 @@ var refreshTimer = setTimeout(refreshPage,refreshTimerInterval);
 var bgPage = chrome.extension.getBackgroundPage();
 
 document.addEventListener('DOMContentLoaded', function() {
-    $('#crawlButton').bind('click', onCrawlClicked);
-    $('#resetButton').bind('click', onResetClicked);
+    $('#crawlButton').on('click', onCrawlClicked);
+    $('#resetButton').on('click', onResetClicked);
     onLoad();
 }, false);
-
 
 function onLoad() 
 {   
@@ -43,7 +42,7 @@ function refreshPage()
         var innerTxt = tab + " ("+ count +")";
         var liTxt = tab==currentTab?innerTxt:"<a href='#' id=\"openTabButton-"+ i +"\" >"+innerTxt+"</a>";
         $("#tabs").append("<li>"+liTxt+"</li>");
-        $("#openTabButton-"+i).bind('click', function() {
+        $("#openTabButton-"+i).on('click', function() {
             openTab(tab);
             return false;
         });
@@ -62,7 +61,7 @@ function refreshPage()
     $(bgPage.getURLsInTab(currentTab)).each(function(i, tab)
     {
         $("#urlsBeingSearched").append("<li><a href='#' id=\"tab-"+ i + "\">"+this.url+"</a></li>");
-        $("#tab-" + i).bind(function() {
+        $("#tab-" + i).on(function() {
             onLIURLClicked(tab.url);
             return false;
         })
