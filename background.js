@@ -9,7 +9,7 @@ function beginCrawl(url)
     reset();    
     appState = "crawling";
     crawlStartURL = url;    
-    allPages[url] = {url:url, state:"queued", depth:0, parsed:parseUri(url)};
+    allPages[url] = {url:url, state:"queued", depth:0};
     startingPage = allPages[url];
     crawlMore();
 }
@@ -17,7 +17,6 @@ function beginCrawl(url)
 function crawlPage(page)
 {
     page.state = "crawling";
-    page.parsed = parseUri(page.url);
     
     console.log("Starting Crawl --> "+JSON.stringify(page));
 
@@ -52,11 +51,9 @@ function onCrawlPageLoaded(page, links)
     // Loop through each
     links.forEach(function(linkURL)
     {
-        var absoluteURL = linkURL;  
-        var parsed = parseUri(linkURL);
-        var protocol = parsed["protocol"];                  
+        var absoluteURL = linkURL;              
 
-        if ((protocol == "http" || protocol == "https") && !allPages[absoluteURL])
+        if ((startsWith(linkURL, "http://") || startsWith(linkURL, "https://")) && !allPages[absoluteURL])
         {           
             // Increment the count
             counts.newValids++;
