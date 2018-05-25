@@ -23,6 +23,24 @@ function getCookies() {
     });
 }
 
+// Working around slightly annoying tab update API: you can't
+// remove listeners, and you can't just listen to one tab
+_onTabUpdated = (tabId, info) => {
+    onTabUpdated(tabId, info);
+}
+onTabUpdated = (tabId, info) => {}
+chrome.tabs.onUpdated.addListener(_onTabUpdated);
+function onTabStatusComplete(tabId) {
+    return new Promise((resolve, reject) => {
+        onTabUpdated = (updatedTabId, info) => {
+            if (updatedTabId == tabId && info.status == 'complete') {
+                resolve();
+                onTabUpdated = (tabId, info) => {}
+            }
+        }
+    });
+}
+
 function crawlPage(page)
 {
     page.state = "crawling";
@@ -36,14 +54,9 @@ function crawlPage(page)
         })
     }
 
-    var getLinksSent = false;
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        console.log('active tabs', tabs);
-        chrome.tabs.onUpdated.addListener(function (tabId , info) {
-           if (info.status === 'complete' && !getLinksSent) {
-              chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);  
-              getLinksSent = true; 
-           }
+        onTabStatusComplete(tabs[0].id).then(() => {
+            chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);
         });
 
         chrome.tabs.update(tabs[0].id, {
