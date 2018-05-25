@@ -1,5 +1,3 @@
-// JavaScript Document
-
 var tabs = ["Queued","Crawling","Crawled","Files","Errors"];
 var allPages = {};
 var crawlStartURL = null;
