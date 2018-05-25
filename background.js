@@ -47,6 +47,12 @@ function onTabStatusComplete(tabId) {
     });
 }
 
+function sendMessage(tabId, message) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.sendMessage(tabId, message, resolve);
+    });
+}
+
 function crawlPage(page)
 {
     page.state = "crawling";
@@ -66,7 +72,7 @@ function crawlPage(page)
         });
 
         onTabStatusComplete(tabs[0].id).then(() => {
-            chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);
+            sendMessage(tabs[0].id, {text: 'get_links'}).then(gotLinks);
         });
     });
 }
