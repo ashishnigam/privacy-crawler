@@ -53,15 +53,11 @@ function onCrawlPageLoaded(page, links)
     {
         if (startsWith(linkURL, startingPage.url) && !allPages[linkURL])
         {    
-            // Build the page object
-            var o = {
+            allPages[linkURL] = {
                 depth: page.depth+1,
                 url: linkURL,
                 state: page.depth == settings.maxDepth ? "max_depth" : "queued"
-            };
-
-            // Save the page in our master array
-            allPages[linkURL] = o;      
+            } 
         }
         
     });
