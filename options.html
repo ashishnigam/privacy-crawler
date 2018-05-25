@@ -1,34 +1,11 @@
 <html>
 <head>
 <title>Chrome Crawler | Options</title>
-<script src="lib/jquery-1.4.3.min.js"></script>
-<script type="text/javascript">
-
-var bgPage = chrome.extension.getBackgroundPage();
-
-// Saves options to localStorage.
-function save_options() 
-{ 
-	bgPage.settings.maxSimultaniousCrawls = $("#max-page-loads").val();
-	bgPage.settings.maxDepth = $("#max-crawl-depth").val();
-	bgPage.settings.interestingFileTypes = $("#interesting-file-types").val();
-	bgPage.settings.pauseOnPopClose = $("#pause-crawl-popup-close").is(':checked')?1:0;
-}
-
-// Restores select box state to saved value from localStorage.
-function restore_options() 
-{	
-	bgPage = chrome.extension.getBackgroundPage();	
-	$("#max-page-loads").val(bgPage.settings.maxSimultaniousCrawls);
-	$("#max-crawl-depth").val(bgPage.settings.maxDepth);
-	$("#interesting-file-types").val(bgPage.settings.interestingFileTypes);
-	if(bgPage.settings.pauseOnPopClose==1){$("#pause-crawl-popup-close").attr('checked','checked');}
-}
-
-</script>
+<script src="lib/jquery-1.12.4.min.js"></script>
+<script src="options.js"></script>
 <link rel="stylesheet" href="options.css" type="text/css"/>
 </head>
-<body onLoad="restore_options()">
+<body>
 <div id="header">
   <h1>Chrome Crawler Options</h1>
 </div>
@@ -50,7 +27,7 @@ function restore_options()
   Pause crawling when popup closes<br >
   <br >
   <br >
-  <button id="save-button" style="font-weight:bold" onClick="save_options()">Save</button>
+  <button id="save-button" style="font-weight:bold">Save</button>
 </p>
 <div id="saved-txt" style="display: none">Options Saved!</div>
 <div class="fix"></div>
