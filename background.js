@@ -30,12 +30,13 @@ function crawlPage(page)
         });
     }
 
+    var getLinksSent = false;
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         console.log('active tabs', tabs);
-
         chrome.tabs.onUpdated.addListener(function (tabId , info) {
-           if (info.status === 'complete') {
-             chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);    
+           if (info.status === 'complete' && !getLinksSent) {
+              chrome.tabs.sendMessage(tabs[0].id, {text: 'get_links'}, gotLinks);  
+              getLinksSent = true; 
            }
         });
 
