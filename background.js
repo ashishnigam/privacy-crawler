@@ -1,5 +1,6 @@
 var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
+var allCookiesSeen = {};
 var allCookies = [];
 var crawlStartURL = null;
 var startingPage = {};
@@ -62,8 +63,24 @@ function onCrawlPageLoaded(page, links, cookies)
     
     // This page is crawled
     allPages[page.url].state = "crawled";  
-    allCookies = cookies;     
-    
+
+    function cookieKey(cookie) {
+        return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
+    }
+    var newCookies = cookies.filter(function(cookie) {
+        return !(cookieKey(cookie) in allCookiesSeen)
+    });
+    newCookies.forEach(function(cookie) {
+        allCookiesSeen[cookieKey(cookie)] = true
+        allCookies.push({
+            firstSeen: page.url,
+            domain: cookie.domain,
+            path: cookie.path,
+            name: cookie.name,
+            expirationDate: cookie.expirationDate
+        })
+    });
+
     // Check to see if anything else needs to be crawled
     crawlMore();    
 }
@@ -94,5 +111,6 @@ function getURLsInTab(tab)
 function reset() 
 {
     allPages = {};  
+    allCookiesSeen = {};
     allCookies = [];
 }
