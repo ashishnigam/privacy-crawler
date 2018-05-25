@@ -77,7 +77,7 @@ function onCrawlPageLoaded(page, links, cookies)
             domain: cookie.domain,
             path: cookie.path,
             name: cookie.name,
-            expirationDate: cookie.expirationDate
+            expirationDate: cookie.session ? 'session' : cookie.expirationDate
         })
     });
 
