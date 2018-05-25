@@ -6,9 +6,6 @@ var crawlStartURL = null;
 var startingHost = "";
 var startingPage = {};
 var appState = "stopped";
-//var maxDepth = parseInt(localStorage["max-crawl-depth"]?localStorage["max-crawl-depth"]:2);
-//var maxSimultaniousCrawls = parseInt(localStorage["max-page-loads"]?localStorage["max-page-loads"]:10);
-//var interestingFileTypes = getInterestingFileTypes();
 
 var settings = 
 {
