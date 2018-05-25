@@ -72,11 +72,11 @@ function refreshPage()
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 
     if (currentTab == 'Cookies') {
-        var text = '';
+        var html = '';
         bgPage.allCookies.forEach(function(cookie) {
-            text += Object.values(cookie).join(',') + '\n'
+            html += Object.values(cookie).join(',') + '\n'
         })
-        $('#allCookies').text(text)
+        $('#allCookies').html(html)
     } else {
         $('#allCookies').html('');
     }
