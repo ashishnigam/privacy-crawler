@@ -63,20 +63,6 @@ body
      z-index: 10;
 }
 
-#infovis-container {
-    position:absolute;
-    top: 80px;
-    left: 10px;
-}
-
-#infovis {
-    position:relative;
-    width:490px;
-    height:325px;
-    margin:auto;
-    overflow:hidden;
-}
-
 #urlsBeingSearched li:nth-child(even) {
     background-color: #f8f8f8
 }
