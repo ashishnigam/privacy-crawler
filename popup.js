@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#crawlButton').on('click', onCrawlClicked);
     $('#resetButton').on('click', onResetClicked);
 
+    $(document.body).on('click', '.open-tab-button', function(e) {
+        e.preventDefault();
+        var tab = $(e.target).data('tab');
+        openTab(tab);
+    });
+
     $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
         e.preventDefault();
         copyToClipboard($('#cookies-csv').text())
@@ -46,12 +52,8 @@ function refreshPage()
     {
         var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
         var innerTxt = tab + " ("+ count +")";
-        var liTxt = tab==currentTab?innerTxt:"<a href='#' id=\"openTabButton-"+ i +"\" >"+innerTxt+"</a>";
+        var liTxt = tab==currentTab?innerTxt:"<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">"+innerTxt+"</a>";
         $("#tabs").append("<li>"+liTxt+"</li>");
-        $("#openTabButton-"+i).on('click', function() {
-            openTab(tab);
-            return false;
-        });
     });
     
     // Set button text
