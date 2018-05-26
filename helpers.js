@@ -10,15 +10,6 @@ function startsWith(s, str){
     return (s.indexOf(str) === 0);
 }
 
-function isInArr(arr,val)
-{
-    for (var i in arr)
-    {
-        if(arr[i]==val){ return true; }
-    }
-    return false;
-}
-
 const copyToClipboard = str => {
   const el = document.createElement('textarea');
   el.value = str;
