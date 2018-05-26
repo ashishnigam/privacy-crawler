@@ -14,7 +14,14 @@
    }],
    "description": "Crawls a site to find all cookies",
    "icons": {
-      "48": "images/icon48.png"
+      "16": "images/icon48.png",
+      "19": "images/icon19.png",
+      "32": "images/icon32.png",
+      "48": "images/icon48.png",
+      "58": "images/icon58.png",
+      "64": "images/icon64.png",
+      "96": "images/icon96.png",
+      "128": "images/icon128.png"
    },
    "name": "Cookie Crawler",
    "permissions": [
