@@ -61,6 +61,8 @@ body
      top: 0px; 
      left: 0x; 
      z-index: 10;
+     width: 58px;
+     height: 58px;
 }
 
 #urlsBeingSearched li:nth-child(even) {
