@@ -8,10 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#resetButton').on('click', onResetClicked);
 
     $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
+        e.preventDefault();
         copyToClipboard($('#cookies-csv').text())
         $(e.target).after('<span>Copied to clipboard</span>');
-
-        e.preventDefault();
     });
 
     onLoad();
