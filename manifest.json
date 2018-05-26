@@ -32,5 +32,6 @@
       "http://*/*",
       "https://*/*"
    ],   
+   "incognito": "split",
    "version": "0.6"
 }
