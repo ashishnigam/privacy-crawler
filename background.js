@@ -71,7 +71,7 @@ async function crawlPage(page)
     var response = await sendMessage(tabs[0].id, {text: 'get_links'});
     console.log('error',  chrome.runtime.lastError);
 
-    var newLinks = response.links.filter(function(linkURL) {
+    var newLinks = (response && response.links ? response.links : []).filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
     })
     newLinks.forEach(function(linkURL) {  
@@ -84,7 +84,7 @@ async function crawlPage(page)
 
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
 
-    allPages[page.url].state = "crawled";  
+    allPages[page.url].state = response ? "crawled" : "error";  
 
     var cookies = await getCookies();
     function cookieKey(cookie) {
