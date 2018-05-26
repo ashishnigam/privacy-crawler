@@ -6,7 +6,7 @@ var crawlStartURL = settings.root;
 var startingPage = {};
 var appState = "stopped";
 
-function beginCrawl(url)
+async function beginCrawl(url)
 {   
     reset();    
     appState = "crawling";
@@ -14,6 +14,10 @@ function beginCrawl(url)
     crawlStartURL = url;    
     allPages[url] = {url:url, state:"queued", depth:0};
     startingPage = allPages[url];
+    var allCookies = await getCookies();
+    console.log("Deleting all cookies");
+    await Promise.all(allCookies.map(removeCookie));
+    console.log("All cookies deleted");
     crawlMore();
 }
 
@@ -28,6 +32,15 @@ function getCookies() {
         chrome.cookies.getAll({}, resolve);
     });
 }
+
+function removeCookie(cookie) {
+    var url = (cookie.secure ? "https" : "http") + "://" + cookie.domain + cookie.path;
+    return new Promise((resolve, reject) => {
+        chrome.cookies.remove({"url": url, "name": cookie.name}, (details) => {
+            details === null ? reject() : resolve();
+        });
+    });  
+};
 
 // Working around slightly annoying tab update API: you can't
 // remove listeners, and you can't just listen to one tab
