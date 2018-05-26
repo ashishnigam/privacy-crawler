@@ -71,8 +71,6 @@ async function crawlPage(page)
     var links = await sendMessage(tabs[0].id, {text: 'get_links'});
     console.log('error',  chrome.runtime.lastError);
 
-    var cookies = await getCookies();
-  
     var newLinks = links.links.filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
     })
@@ -88,6 +86,7 @@ async function crawlPage(page)
 
     allPages[page.url].state = "crawled";  
 
+    var cookies = await getCookies();
     function cookieKey(cookie) {
         return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
     }
