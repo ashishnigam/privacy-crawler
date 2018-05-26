@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         openTab(tab);
     });
 
+    $(document.body).on('click', '.link', function(e) {
+       e.preventDefault();
+       onLIURLClicked(e.target.href);
+   });
+
     $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
         e.preventDefault();
         copyToClipboard($('#cookies-csv').text())
@@ -66,13 +71,8 @@ function refreshPage()
     else { $("#crawUrl").attr("disabled", false); $("#resetButton").attr("disabled", false);}
 
     // List all the urls on this tab
-    $(bgPage.getURLsInTab(currentTab)).each(function(i, tab)
-    {
-        $("#urlsBeingSearched").append("<li><a href='#' id=\"tab-"+ i + "\">"+this.url+"</a></li>");
-        $("#tab-" + i).on(function() {
-            onLIURLClicked(tab.url);
-            return false;
-        })
+    $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
+        $("#urlsBeingSearched").append("<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>");
     });
 
     // If we are done then stop the crawl now
