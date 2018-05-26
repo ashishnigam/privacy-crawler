@@ -72,12 +72,8 @@ async function crawlPage(page)
     console.log('error',  chrome.runtime.lastError);
 
     var cookies = await getCookies();
-    onCrawlPageLoaded(page, links.links, cookies);
-}
-
-function onCrawlPageLoaded(page, links, cookies)
-{   
-    var newLinks = links.filter(function(linkURL) {
+  
+    var newLinks = links.links.filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
     })
     newLinks.forEach(function(linkURL) {  
