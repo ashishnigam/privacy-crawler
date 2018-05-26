@@ -1,5 +1,4 @@
 var currentTab = "Queued";
-var refreshNeeded = true;
 var refreshTimerInterval = 2000;
 var refreshTimer = setTimeout(refreshPage,refreshTimerInterval);
 var bgPage = chrome.extension.getBackgroundPage();
