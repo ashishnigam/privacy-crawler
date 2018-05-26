@@ -68,10 +68,10 @@ async function crawlPage(page)
     });
     await onTabStatusComplete(tabs[0].id);
 
-    var links = await sendMessage(tabs[0].id, {text: 'get_links'});
+    var response = await sendMessage(tabs[0].id, {text: 'get_links'});
     console.log('error',  chrome.runtime.lastError);
 
-    var newLinks = links.links.filter(function(linkURL) {
+    var newLinks = response.links.filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
     })
     newLinks.forEach(function(linkURL) {  
