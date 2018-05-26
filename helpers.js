@@ -10,14 +10,6 @@ function startsWith(s, str){
     return (s.indexOf(str) === 0);
 }
 
-function getAllLinksOnPage(page)
-{
-    var links = new Array();    
-    $(page).find('[src]').each(function(){ links.push($(this).attr('src')); }); 
-    $(page).find('[href]').each(function(){ links.push($(this).attr('href')) });    
-    return links;
-}
-
 function isInArr(arr,val)
 {
     for (var i in arr)
