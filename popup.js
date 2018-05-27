@@ -30,14 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 async function onLoad() {   
-    var u = bgPage.crawlStartURL;
-    if (!u || u == "") {
-        var tabs = await tabQuery({active: true, currentWindow: true});
-        $("#crawUrl").val(tabs[0].url);
-    } else {
-        $("#crawUrl").val(u);
-    }
-
+    var existingUrl = bgPage.crawlStartURL;
+    var url = existingUrl ? existingUrl : (await tabQuery({active: true, currentWindow: true}))[0].url;
+    $("#crawUrl").val(url);
     $("#maxDepth").val(settings.maxDepth);
     refreshPage();
 }   
