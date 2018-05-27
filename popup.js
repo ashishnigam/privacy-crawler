@@ -60,18 +60,16 @@ function refreshPage() {
     $("#crawUrl").attr("disabled", isDisabled);
     $("#resetButton").attr("disabled", isDisabled);
 
-    // First clear everything out
-    $("#tabs li").remove();
     $("#urlsBeingSearched li").remove();
             
-    // Build each tab
-    $(bgPage.tabs).each(function(i, tab)
-    {
-        var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
-        var innerTxt = tab + " ("+ count +")";
-        var liTxt = tab==currentTab?innerTxt:"<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">"+innerTxt+"</a>";
-        $("#tabs").append("<li>"+liTxt+"</li>");
-    });
+    $("#tabs").html(
+        bgPage.tabs.map(function(tab) {
+            var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
+            var innerTxt = tab + " ("+ count +")";
+            var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
+            return "<li>" + liTxt + "</li>";
+        }).join('')
+    );
     
     // List all the urls on this tab
     $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
