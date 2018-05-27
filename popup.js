@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $(document.body).on('click', '.link', function(e) {
        e.preventDefault();
-       onLIURLClicked(e.target.href);
+       openInNewTab(e.target.href);
    });
 
     $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
@@ -92,9 +92,7 @@ function refreshPage() {
     );
 }
 
-
-
-function onLIURLClicked(url) {
+function openInNewTab(url) {
     chrome.tabs.create({url:url, selected:false});
 }
 
