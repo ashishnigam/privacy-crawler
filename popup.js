@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $(document.body).on('click', '.open-tab-button', function(e) {
         e.preventDefault();
-        var tab = $(e.target).data('tab');
-        openTab(tab);
+        currentTab = $(e.target).data('tab');
+        refreshPage();
     });
 
     $(document.body).on('click', '.link', function(e) {
@@ -86,11 +86,6 @@ function refreshPage() {
             })()
         : ''
     );
-}
-
-function openTab(tab)  {
-     currentTab = tab;
-     refreshPage();
 }
 
 function onCrawlClicked() {
