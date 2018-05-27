@@ -45,6 +45,9 @@ function onLoad()
 }   
 
 function refreshPage() {
+    // If we are done then stop the crawl now
+    if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
+
     // First clear everything out
     $("#tabs li").remove();
     $("#urlsBeingSearched li").remove();
@@ -71,9 +74,6 @@ function refreshPage() {
     $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
         $("#urlsBeingSearched").append("<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>");
     });
-
-    // If we are done then stop the crawl now
-    if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 
     if (currentTab == 'Cookies') {
         var html = '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>';
