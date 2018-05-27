@@ -34,7 +34,7 @@ async function onLoad() {
     $("#crawUrl").val(url);
     $("#maxDepth").val(settings.maxDepth);
     refreshPage();
-}   
+}
 
 function refreshPage() {
     // Set button text
