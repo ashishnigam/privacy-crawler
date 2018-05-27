@@ -21,12 +21,6 @@ async function beginCrawl(url)
     crawlMore();
 }
 
-function tabQuery(query) {
-    return new Promise((resolve, reject) => {
-         chrome.tabs.query(query, resolve);
-    });
-}
-
 function getCookies() {
     return new Promise((resolve, reject) => {
         chrome.cookies.getAll({}, resolve);

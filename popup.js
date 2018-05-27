@@ -29,13 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
     onLoad();
 }, false);
 
-function onLoad() 
-{   
+async function onLoad() {   
     var u = bgPage.crawlStartURL;
     if (!u || u == "") {
-        chrome.tabs.getSelected(null, function(tab) {
-            $("#crawUrl").val(tab.url);
-        });
+        var tabs = await tabQuery({active: true, currentWindow: true});
+        $("#crawUrl").val(tabs[0].url);
     } else {
         $("#crawUrl").val(u);
     }

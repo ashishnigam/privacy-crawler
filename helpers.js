@@ -21,3 +21,9 @@ const copyToClipboard = str => {
   document.execCommand('copy');
   document.body.removeChild(el);
 }
+
+function tabQuery(query) {
+    return new Promise((resolve, reject) => {
+         chrome.tabs.query(query, resolve);
+    });
+}
