@@ -96,14 +96,11 @@ function openTab(tab)  {
 
 function onCrawlClicked() {
     if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0) {
-        console.log("Resuming Crawl");  
         bgPage.crawlMore();
     } else if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0) {
-        console.log("Beginning Crawl");
         settings.maxDepth = parseInt($("#maxDepth").val());
         bgPage.beginCrawl($("#crawUrl").val());
     } else if (bgPage.appState == "crawling") {
-        console.log("Pausing Crawl");
         bgPage.stop();        
     }
     refreshPage();
