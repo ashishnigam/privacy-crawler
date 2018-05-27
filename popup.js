@@ -120,7 +120,6 @@ function onResetClicked() {
 
 function stopCrawl() {
     bgPage.appState = "stopped";
-    $("#crawlButton").val(bgPage.getURLsInTab("Queued").length == 0 ? "Crawl" : "Resume");    
     
     for (var ref in bgPage.allPages) {
         var o = bgPage.allPages[ref]
