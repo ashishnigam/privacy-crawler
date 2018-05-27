@@ -98,8 +98,7 @@ function onCrawlClicked() {
     if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0) {
         bgPage.crawlMore();
     } else if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0) {
-        settings.maxDepth = parseInt($("#maxDepth").val());
-        bgPage.beginCrawl($("#crawUrl").val());
+        bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val()));
     } else if (bgPage.appState == "crawling") {
         bgPage.stop();        
     }
