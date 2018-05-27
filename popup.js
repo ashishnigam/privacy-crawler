@@ -62,9 +62,10 @@ function refreshPage() {
     });
     
     // Set button text
-    if(bgPage.appState=="stopped" && bgPage.getURLsInTab("Queued").length>0) {  $("#crawlButton").val("Resume"); }
-    else if(bgPage.appState=="stopped" && bgPage.getURLsInTab("Queued").length==0) { $("#crawlButton").val("Crawl"); }
-    else if(bgPage.appState=="crawling") { $("#crawlButton").val("Pause");  }
+    var crawlButtonText = bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0  ? "Resume" :
+                          bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0 ? "Crawl"  :
+                                                                                                      "Pause";
+    $("#crawlButton").val(crawlButtonText);
     
     // Set enabledness
     if(bgPage.appState=="crawling"){ $("#crawUrl").attr("disabled", true); $("#resetButton").attr("disabled", true); }
