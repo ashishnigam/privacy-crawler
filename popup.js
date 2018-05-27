@@ -75,28 +75,28 @@ function refreshPage() {
         }).join('')
     );
 
-    if (currentTab == 'Cookies') {
-        var html = '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>';
-        html += '<div id="cookies-csv">';
+    $('#allCookies').html(
+        currentTab == 'Cookies' ?
+            (() => {
+                var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
+                    var newKeys = Object.keys(cookie).filter((key) => {
+                        return uniqueKeys.indexOf(key) === -1;
+                    });
+                    return uniqueKeys.concat(newKeys);
+                }, []);
 
-        var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
-            var newKeys = Object.keys(cookie).filter((key) => {
-                return uniqueKeys.indexOf(key) === -1;
-            });
-            return uniqueKeys.concat(newKeys);
-        }, []);
-        html += keys.join('\t') + '\n';
+                var keysData = keys.join('\t') + '\n';
 
-        html += bgPage.allCookies.map(function(cookie) {
-            return keys.map(function(key) {
-                return (key in cookie) ? cookie[key] : '';
-            }).join('\t') + '\n';
-        }).join('');
-        html += '</div>'
-        $('#allCookies').html(html)
-    } else {
-        $('#allCookies').html('');
-    }
+                var cookiesData = bgPage.allCookies.map((cookie) => {
+                    return keys.map((key) => {
+                        return (key in cookie) ? cookie[key] : '';
+                    }).join('\t') + '\n';
+                }).join('');
+                return '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>' +
+                       '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
+            })()
+        : ''
+    );
 }
 
 
