@@ -59,8 +59,6 @@ function refreshPage() {
     $("#maxDepth").attr("disabled", isDisabled);
     $("#crawUrl").attr("disabled", isDisabled);
     $("#resetButton").attr("disabled", isDisabled);
-
-    $("#urlsBeingSearched li").remove();
             
     $("#tabs").html(
         bgPage.tabs.map(function(tab) {
@@ -71,10 +69,11 @@ function refreshPage() {
         }).join('')
     );
     
-    // List all the urls on this tab
-    $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
-        $("#urlsBeingSearched").append("<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>");
-    });
+    $("#urlsBeingSearched").html(
+        bgPage.getURLsInTab(currentTab).map((page) => {
+            return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
+        }).join('')
+    );
 
     if (currentTab == 'Cookies') {
         var html = '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>';
