@@ -110,12 +110,16 @@ async function crawlPage(page)
 }
 
 async function crawlMore() {
+    appState = "crawling";
+
     while (appState == "crawling" && getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
         var page = getURLsInTab("Queued")[0];
         page.state = "crawling";
         chrome.runtime.sendMessage({message: "refresh_page"});
         await crawlPage(page);
     }
+
+    appState = "stopped";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
@@ -128,7 +132,22 @@ function getURLsInTab(tab) {
     });
 }
 
+function stop() {
+    appState = "stopped";
+
+    for (var ref in allPages) {
+        var o = allPages[ref];
+        if (o.state == "crawling") {
+            o.state = "queued";
+        }
+    }
+    
+    chrome.runtime.sendMessage({message: "refresh_page"});
+}
+
 function reset() {
+    appState = "stopped";
+
     allPages = {};  
     allCookiesSeen = {};
     allCookies = [];

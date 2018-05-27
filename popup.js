@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 document.addEventListener('DOMContentLoaded', function() {
     $('#crawlButton').on('click', onCrawlClicked);
-    $('#resetButton').on('click', onResetClicked);
+    $('#resetButton').on('click', bgPage.reset);
 
     $(document.body).on('click', '.open-tab-button', function(e) {
         e.preventDefault();
@@ -38,9 +38,6 @@ async function onLoad() {
 }   
 
 function refreshPage() {
-    // If we are done then stop the crawl now
-    if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
-
     // Set button text
     var crawlButtonText = bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0  ? "Resume" :
                           bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0 ? "Crawl"  :
@@ -100,7 +97,6 @@ function openTab(tab)  {
 function onCrawlClicked() {
     if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0) {
         console.log("Resuming Crawl");  
-        bgPage.appState="crawling";
         bgPage.crawlMore();
     } else if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0) {
         console.log("Beginning Crawl");
@@ -108,25 +104,7 @@ function onCrawlClicked() {
         bgPage.beginCrawl($("#crawUrl").val());
     } else if (bgPage.appState == "crawling") {
         console.log("Pausing Crawl");
-        stopCrawl();        
+        bgPage.stop();        
     }
-    refreshPage();
-}
-
-function onResetClicked() {
-    stopCrawl();
-    bgPage.reset();
-}
-
-function stopCrawl() {
-    bgPage.appState = "stopped";
-    
-    for (var ref in bgPage.allPages) {
-        var o = bgPage.allPages[ref]
-        if (o.state == "crawling") {           
-            o.state = "queued";
-        }
-    }
-    
     refreshPage();
 }
