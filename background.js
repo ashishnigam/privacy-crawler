@@ -132,4 +132,5 @@ function reset() {
     allPages = {};  
     allCookiesSeen = {};
     allCookies = [];
+    chrome.runtime.sendMessage({message: "refresh_page"});
 }

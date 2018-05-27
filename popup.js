@@ -116,7 +116,6 @@ function onCrawlClicked() {
 function onResetClicked() {
     stopCrawl();
     bgPage.reset();
-    refreshPage();
 }
 
 function stopCrawl() {
