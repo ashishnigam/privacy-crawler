@@ -79,14 +79,12 @@ function refreshPage() {
         var html = '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>';
         html += '<div id="cookies-csv">';
 
-        var keys = [];
-        bgPage.allCookies.forEach(function(cookie) {
-            Object.keys(cookie).forEach(function(key) {
-                if (keys.indexOf(key) === -1) {
-                    keys.push(key);
-                }
-            })
-        });
+        var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
+            var newKeys = Object.keys(cookie).filter((key) => {
+                return uniqueKeys.indexOf(key) === -1;
+            });
+            return uniqueKeys.concat(newKeys);
+        }, []);
         html += keys.join('\t') + '\n';
 
         html += bgPage.allCookies.map(function(cookie) {
