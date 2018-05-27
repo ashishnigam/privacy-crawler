@@ -92,51 +92,40 @@ function refreshPage() {
     );
 }
 
-function openTab(tab) 
-{
+function openTab(tab)  {
      currentTab = tab;
      refreshPage();
 }
 
-function onCrawlClicked()
-{
-    if(bgPage.appState=="stopped" && bgPage.getURLsInTab("Queued").length>0)
-    {
+function onCrawlClicked() {
+    if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0) {
         console.log("Resuming Crawl");  
         bgPage.appState="crawling";
         bgPage.crawlMore();
-    }
-    else if(bgPage.appState=="stopped" && bgPage.getURLsInTab("Queued").length==0)
-    {
+    } else if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0) {
         console.log("Beginning Crawl");
         settings.maxDepth = parseInt($("#maxDepth").val());
         bgPage.beginCrawl($("#crawUrl").val());
-    }
-    else if(bgPage.appState=="crawling")
-    {
+    } else if (bgPage.appState == "crawling") {
         console.log("Pausing Crawl");
         stopCrawl();        
     }
     refreshPage();
 }
 
-function onResetClicked()
-{
+function onResetClicked() {
     stopCrawl();
     bgPage.reset();
     refreshPage();
 }
 
-function stopCrawl()
-{
+function stopCrawl() {
     bgPage.appState = "stopped";
-    $("#crawlButton").val(bgPage.getURLsInTab("Queued").length==0?"Crawl":"Resume");    
+    $("#crawlButton").val(bgPage.getURLsInTab("Queued").length == 0 ? "Crawl" : "Resume");    
     
-    for(var ref in bgPage.allPages) 
-    {
+    for (var ref in bgPage.allPages) {
         var o = bgPage.allPages[ref]
-        if(o.state=="crawling")
-        {           
+        if (o.state == "crawling") {           
             o.state = "queued";
         }
     }
