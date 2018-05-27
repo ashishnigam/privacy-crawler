@@ -133,14 +133,6 @@ function getURLsInTab(tab) {
 
 function stop() {
     appState = "stopped";
-
-    for (var ref in allPages) {
-        var o = allPages[ref];
-        if (o.state == "crawling") {
-            o.state = "queued";
-        }
-    }
-    
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
