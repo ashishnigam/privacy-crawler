@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 async function onLoad() {   
-    var existingUrl = bgPage.crawlStartURL;
-    var url = existingUrl ? existingUrl : (await tabQuery({active: true, currentWindow: true}))[0].url;
+    var url = settings.root ? settings.root : (await tabQuery({active: true, currentWindow: true}))[0].url;
     $("#crawUrl").val(url);
     $("#maxDepth").val(settings.maxDepth);
     refreshPage();

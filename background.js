@@ -2,7 +2,6 @@ var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
-var crawlStartURL = settings.root;
 var startingPage = {};
 var appState = "stopped";
 
@@ -11,7 +10,6 @@ async function beginCrawl(url, maxDepth) {
     appState = "crawling";
     settings.root = url;
     settings.maxDepth = maxDepth;
-    crawlStartURL = url;    
     allPages[url] = {url:url, state:"queued", depth:0};
     startingPage = allPages[url];
     var allCookies = await getCookies();
