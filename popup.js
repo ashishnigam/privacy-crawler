@@ -103,9 +103,7 @@ function refreshPage() {
 
 
 
-function onLIURLClicked(url)
-{
-    //document.execCommand('SaveAs',null,filename)
+function onLIURLClicked(url) {
     chrome.tabs.create({url:url, selected:false});
 }
 
