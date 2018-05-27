@@ -69,6 +69,7 @@ function refreshPage() {
     
     // Set enabledness
     var isDisabled = bgPage.appState == "crawling";
+    $("#maxDepth").attr("disabled", isDisabled);
     $("#crawUrl").attr("disabled", isDisabled);
     $("#resetButton").attr("disabled", isDisabled);
 
