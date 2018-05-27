@@ -68,8 +68,9 @@ function refreshPage() {
     $("#crawlButton").val(crawlButtonText);
     
     // Set enabledness
-    if(bgPage.appState=="crawling"){ $("#crawUrl").attr("disabled", true); $("#resetButton").attr("disabled", true); }
-    else { $("#crawUrl").attr("disabled", false); $("#resetButton").attr("disabled", false);}
+    var isDisabled = bgPage.appState == "crawling";
+    $("#crawUrl").attr("disabled", isDisabled);
+    $("#resetButton").attr("disabled", isDisabled);
 
     // List all the urls on this tab
     $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
