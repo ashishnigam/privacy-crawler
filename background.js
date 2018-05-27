@@ -71,8 +71,6 @@ function sendMessage(tabId, message) {
 
 async function crawlPage(page)
 {
-    page.state = "crawling";
-    
     console.log("Starting Crawl --> "+JSON.stringify(page));
 
     var tabs = await tabQuery({active: true, currentWindow: true});
@@ -120,8 +118,12 @@ async function crawlPage(page)
 
 async function crawlMore() {
     while (appState == "crawling" && getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
-        await crawlPage(getURLsInTab("Queued")[0]);
+        var page = getURLsInTab("Queued")[0];
+        page.state = "crawling";
+        chrome.runtime.sendMessage({message: "refresh_page"});
+        await crawlPage(page);
     }
+    chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
 function getURLsInTab(tab)

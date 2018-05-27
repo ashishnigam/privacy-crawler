@@ -1,7 +1,9 @@
 var currentTab = "Queued";
-var refreshTimerInterval = 2000;
-var refreshTimer = setTimeout(refreshPage,refreshTimerInterval);
 var bgPage = chrome.extension.getBackgroundPage();
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.message == 'refresh_page') refreshPage();
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     $('#crawlButton').on('click', onCrawlClicked);
@@ -42,12 +44,7 @@ function onLoad()
     refreshPage();
 }   
 
-function refreshPage() 
-{
-    // Start the timer again
-    clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(refreshPage,refreshTimerInterval);
-        
+function refreshPage() {
     // First clear everything out
     $("#tabs li").remove();
     $("#urlsBeingSearched li").remove();
