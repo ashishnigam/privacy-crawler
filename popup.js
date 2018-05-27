@@ -48,6 +48,18 @@ function refreshPage() {
     // If we are done then stop the crawl now
     if(bgPage.appState=="crawling" && bgPage.getURLsInTab("Crawling").length==0 && bgPage.getURLsInTab("Queued").length==0){ stopCrawl(); }
 
+    // Set button text
+    var crawlButtonText = bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0  ? "Resume" :
+                          bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0 ? "Crawl"  :
+                                                                                                      "Pause";
+    $("#crawlButton").val(crawlButtonText);
+    
+    // Set enabledness
+    var isDisabled = bgPage.appState == "crawling";
+    $("#maxDepth").attr("disabled", isDisabled);
+    $("#crawUrl").attr("disabled", isDisabled);
+    $("#resetButton").attr("disabled", isDisabled);
+
     // First clear everything out
     $("#tabs li").remove();
     $("#urlsBeingSearched li").remove();
@@ -61,18 +73,6 @@ function refreshPage() {
         $("#tabs").append("<li>"+liTxt+"</li>");
     });
     
-    // Set button text
-    var crawlButtonText = bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0  ? "Resume" :
-                          bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0 ? "Crawl"  :
-                                                                                                      "Pause";
-    $("#crawlButton").val(crawlButtonText);
-    
-    // Set enabledness
-    var isDisabled = bgPage.appState == "crawling";
-    $("#maxDepth").attr("disabled", isDisabled);
-    $("#crawUrl").attr("disabled", isDisabled);
-    $("#resetButton").attr("disabled", isDisabled);
-
     // List all the urls on this tab
     $(bgPage.getURLsInTab(currentTab)).each(function(i, page) {
         $("#urlsBeingSearched").append("<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>");
