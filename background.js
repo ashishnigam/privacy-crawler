@@ -6,8 +6,7 @@ var crawlStartURL = settings.root;
 var startingPage = {};
 var appState = "stopped";
 
-async function beginCrawl(url)
-{   
+async function beginCrawl(url) { 
     reset();    
     appState = "crawling";
     settings.root = url;
@@ -120,8 +119,7 @@ async function crawlMore() {
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
-function getURLsInTab(tab)
-{
+function getURLsInTab(tab) {
     return Object.values(allPages).filter((o) => {
         return (tab=="Queued"   && o.state=="queued")   ||
                (tab=="Crawling" && o.state=="crawling") ||
@@ -130,8 +128,7 @@ function getURLsInTab(tab)
     });
 }
 
-function reset() 
-{
+function reset() {
     allPages = {};  
     allCookiesSeen = {};
     allCookies = [];
