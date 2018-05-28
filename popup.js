@@ -25,8 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
        chrome.tabs.create({url: e.target.href, selected:false});
    });
 
-    $(document.body).on('click', '.cookies-copy-to-clipboard', function(e) {
-        e.preventDefault();
+    $(document.body).on('click', '.cookies-copy-to-clipboard', function() {
         copyToClipboard($('#cookies-csv').text())
         $(e.target).after('<span>Copied to clipboard</span>');
     });

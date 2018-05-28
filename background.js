@@ -87,8 +87,6 @@ async function crawlPage(page)
 
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
 
-    allPages[page.url].state = response ? "crawled" : "error";  
-
     var cookies = await getCookies();
     function cookieKey(cookie) {
         return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
@@ -106,6 +104,8 @@ async function crawlPage(page)
             firstSeen: page.url
         })
     });
+
+    allPages[page.url].state = response ? "crawled" : "error";
 }
 
 async function crawlMore() {
