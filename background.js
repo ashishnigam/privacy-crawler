@@ -61,6 +61,10 @@ function sendMessage(tabId, message) {
     });
 }
 
+function cookieKey(cookie) {
+    return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
+}
+
 async function crawlPage(page)
 {
     console.log("Starting Crawl --> "+JSON.stringify(page));
@@ -73,6 +77,9 @@ async function crawlPage(page)
 
     var response = await sendMessage(tabs[0].id, {text: 'get_links'});
     console.log('error',  chrome.runtime.lastError);
+    if (response == null) {
+        throw new Error('No response from page');
+    }
 
     var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
@@ -83,17 +90,15 @@ async function crawlPage(page)
             state: page.depth == settings.maxDepth ? "max_depth" : "queued"
         }
     });
-    newPages.forEach(function(page) {
-        allPages[page.url] = page;
-    });
 
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
+    return newPages;
+}
 
+async function getNewCookies(page) {
     var cookies = await getCookies();
-    function cookieKey(cookie) {
-        return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
-    }
-    var newCookies = cookies.filter(function(cookie) {
+
+    return cookies.filter(function(cookie) {
         return !(cookieKey(cookie) in allCookiesSeen)
     }).map((cookie) => {
         return {
@@ -104,12 +109,6 @@ async function crawlPage(page)
             firstSeen: page.url
         };
     });
-    newCookies.forEach(function(cookie) {
-        allCookiesSeen[cookieKey(cookie)] = true
-        allCookies.push(cookie)
-    });
-
-    page.state = response ? "crawled" : "error";
 }
 
 async function crawlMore() {
@@ -119,7 +118,24 @@ async function crawlMore() {
         var page = getURLsInTab("Queued")[0];
         page.state = "crawling";
         chrome.runtime.sendMessage({message: "refresh_page"});
-        await crawlPage(page);
+
+        try {
+            newPages = await crawlPage(page);
+        } catch(e) {
+            page.state = "error";
+        } finally {
+            page.state = page.state != "error" ? "crawled" : page.state;
+        }
+        newPages.forEach(function(page) {
+            allPages[page.url] = page;
+        });
+
+        // Even in the case of error, cookies, might have changed
+        var newCookies = await getNewCookies(page);
+        newCookies.forEach(function(cookie) {
+            allCookiesSeen[cookieKey(cookie)] = true
+            allCookies.push(cookie)
+        });
     }
 
     // We are either finished, or we have paused
