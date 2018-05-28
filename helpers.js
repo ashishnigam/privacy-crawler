@@ -1,5 +1,4 @@
-var settings = 
-{
+var settings = {
     get maxDepth() { return localStorage["max-crawl-depth"]!=null?localStorage["max-crawl-depth"]:2; },
     set maxDepth(val) { localStorage['max-crawl-depth'] = val; },
     get root() { return localStorage["root"]!=null?localStorage["root"]:""; },
