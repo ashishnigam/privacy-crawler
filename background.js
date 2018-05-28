@@ -93,16 +93,18 @@ async function crawlPage(page)
     }
     var newCookies = cookies.filter(function(cookie) {
         return !(cookieKey(cookie) in allCookiesSeen)
-    });
-    newCookies.forEach(function(cookie) {
-        allCookiesSeen[cookieKey(cookie)] = true
-        allCookies.push({
+    }).map((cookie) => {
+        return {
             domain: cookie.domain,
             path: cookie.path,
             name: cookie.name,
             expirationDate: cookie.session ? 'session' : moment.unix(cookie.expirationDate).fromNow(true),
             firstSeen: page.url
-        })
+        };
+    });
+    newCookies.forEach(function(cookie) {
+        allCookiesSeen[cookieKey(cookie)] = true
+        allCookies.push(cookie)
     });
 
     allPages[page.url].state = response ? "crawled" : "error";
