@@ -89,12 +89,8 @@ function refreshPage() {
 }
 
 function onCrawlClicked() {
-    if (bgPage.appState == "paused") {
-        bgPage.crawlMore();
-    } else if (bgPage.appState == "stopped") {
-        bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val()));
-    } else if (bgPage.appState == "crawling") {
-        bgPage.pause();
-    }
+    bgPage.appState == "paused"  ? bgPage.crawlMore() :
+    bgPage.appState == "stopped" ? bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val())) :
+                                   bgPage.pause();
     refreshPage();
 }
