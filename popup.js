@@ -6,7 +6,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    $('#crawlButton').on('click', onCrawlClicked);
+    $('#crawlButton').on('click', () => {
+        bgPage.appState == "paused"  ? bgPage.crawlMore() :
+        bgPage.appState == "stopped" ? bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val())) :
+                                       bgPage.pause();
+        refreshPage();
+    });
     $('#resetButton').on('click', bgPage.reset);
 
     $(document.body).on('click', '.open-tab-button', function(e) {
@@ -86,11 +91,4 @@ function refreshPage() {
             })()
         : ''
     );
-}
-
-function onCrawlClicked() {
-    bgPage.appState == "paused"  ? bgPage.crawlMore() :
-    bgPage.appState == "stopped" ? bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val())) :
-                                   bgPage.pause();
-    refreshPage();
 }
