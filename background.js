@@ -109,7 +109,7 @@ async function crawlPage(page)
         allCookies.push(cookie)
     });
 
-    allPages[page.url].state = response ? "crawled" : "error";
+    page.state = response ? "crawled" : "error";
 }
 
 async function crawlMore() {
