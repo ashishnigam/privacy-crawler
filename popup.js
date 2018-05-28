@@ -37,14 +37,14 @@ async function onLoad() {
 }
 
 function refreshPage() {
-    // Set button text
-    var crawlButtonText = bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0  ? "Resume" :
-                          bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0 ? "Crawl"  :
-                                                                                                      "Pause";
+    var crawlButtonText = bgPage.appState == "paused"  ? "Resume" :
+                          bgPage.appState == "stopped" ? "Crawl"  :
+                                                         "Pause";
     $("#crawlButton").val(crawlButtonText);
+    var isDisabledCrawl = bgPage.appState == "paused" && bgPage.getURLsInTab("Crawling").length > 0;
+    $("#crawlButton").attr("disabled", isDisabledCrawl);
     
-    // Set enabledness
-    var isDisabled = bgPage.appState == "crawling";
+    var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
     $("#maxDepth").attr("disabled", isDisabled);
     $("#crawUrl").attr("disabled", isDisabled);
     $("#resetButton").attr("disabled", isDisabled);
@@ -89,12 +89,12 @@ function refreshPage() {
 }
 
 function onCrawlClicked() {
-    if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length > 0) {
+    if (bgPage.appState == "paused") {
         bgPage.crawlMore();
-    } else if (bgPage.appState == "stopped" && bgPage.getURLsInTab("Queued").length == 0) {
+    } else if (bgPage.appState == "stopped") {
         bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val()));
     } else if (bgPage.appState == "crawling") {
-        bgPage.stop();        
+        bgPage.pause();
     }
     refreshPage();
 }

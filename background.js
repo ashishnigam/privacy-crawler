@@ -111,14 +111,15 @@ async function crawlPage(page)
 async function crawlMore() {
     appState = "crawling";
 
-    while (appState == "crawling" && getURLsInTab("Crawling").length < 1 && getURLsInTab("Queued").length > 0) {
+    while (appState == "crawling" && getURLsInTab("Queued").length > 0) {
         var page = getURLsInTab("Queued")[0];
         page.state = "crawling";
         chrome.runtime.sendMessage({message: "refresh_page"});
         await crawlPage(page);
     }
 
-    appState = "stopped";
+    // We are either finished, or we have paused
+    appState = (appState == "paused" && getURLsInTab("Queued").length) ? "paused" : "stopped";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
@@ -131,12 +132,18 @@ function getURLsInTab(tab) {
     });
 }
 
+function pause() {
+    appState = "paused";
+    chrome.runtime.sendMessage({message: "refresh_page"});
+}
+
 function stop() {
     appState = "stopped";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
 function reset() {
+    console.log('resetting');
     appState = "stopped";
 
     allPages = {};  
