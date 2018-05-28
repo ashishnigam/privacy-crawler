@@ -74,18 +74,20 @@ async function crawlPage(page)
     var response = await sendMessage(tabs[0].id, {text: 'get_links'});
     console.log('error',  chrome.runtime.lastError);
 
-    var newLinks = (response && response.links ? response.links : []).filter(function(linkURL) {
+    var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
         return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
-    })
-    newLinks.forEach(function(linkURL) {  
-        allPages[linkURL] = {
+    }).map((linkURL) => {
+        return {
             depth: page.depth+1,
             url: linkURL,
             state: page.depth == settings.maxDepth ? "max_depth" : "queued"
         }
     });
+    newPages.forEach(function(page) {
+        allPages[page.url] = page;
+    });
 
-    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newLinks.length}));
+    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
 
     var cookies = await getCookies();
     function cookieKey(cookie) {
