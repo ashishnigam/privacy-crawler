@@ -1,17 +1,37 @@
 {
+   "manifest_version": 2,
    "browser_action": 
    {
       "default_icon": "images/icon48.png",
-      "popup": "popup.html"
+      "default_popup": "popup.html"
    },
-   "background_page": "background.html",
-   "description": "Crawl a url for interesting links!",
+   "background": {
+      "page": "background.html"
+   },
+   "content_scripts": [{
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+   }],
+   "description": "Crawls a site to find all cookies",
    "icons": {
-      "48": "images/icon48.png"
+      "16": "images/icon48.png",
+      "19": "images/icon19.png",
+      "32": "images/icon32.png",
+      "48": "images/icon48.png",
+      "58": "images/icon58.png",
+      "64": "images/icon64.png",
+      "96": "images/icon96.png",
+      "128": "images/icon128.png"
    },
-  
-   "name": "Chrome Crawler",
-   "options_page": "options.html",
-   "permissions": [ "tabs", "http://*/*", "https://*/*" ],   
+   "name": "Cookie Crawler",
+   "permissions": [
+      "activeTab",
+      "clipboardWrite",
+      "cookies",
+      "tabs",
+      "http://*/*",
+      "https://*/*"
+   ],   
+   "incognito": "split",
    "version": "0.6"
 }
