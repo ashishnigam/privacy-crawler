@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function delegate(element, event, selector, handler) {
     element.addEventListener(event, function(e) {
-        for (var target = e.target; target; target = target.parentNode) {
+        for (var target = e.target; target && target != element; target = target.parentNode) {
             if (target.matches(selector)) {
                 handler(e);
                 break;
@@ -19,7 +19,7 @@ function delegate(element, event, selector, handler) {
 document.addEventListener('DOMContentLoaded', function() {
     delegate(document.body, 'click', '#crawlButton', () => {
         bgPage.appState == "paused"  ? bgPage.crawlMore() :
-        bgPage.appState == "stopped" ? bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val())) :
+        bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
                                        bgPage.pause();
         refreshPage();
     });
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     delegate(document.body, 'click', '.open-tab-button', (e) => {
         e.preventDefault();
-        currentTab = $(e.target).data('tab');
+        currentTab = e.target.getAttribute('data-tab');
         refreshPage();
     });
 
@@ -36,9 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
        chrome.tabs.create({url: e.target.href, selected:false});
     });
 
-    delegate(document.body, 'click', '.cookies-copy-to-clipboard', () => {
-        copyToClipboard($('#cookies-csv').text())
-        $(e.target).after('<span>Copied to clipboard</span>');
+    delegate(document.body, 'click', '.cookies-copy-to-clipboard', (e) => {
+        copyToClipboard(document.getElementById('cookies-csv').innerText)
+        var message = new DOMParser().parseFromString('<span>Copied to clipboard</span>', "text/html").body.firstChild;
+        e.target.parentNode.insertBefore(message, e.target.nextSibling);
     });
 
     onLoad();
@@ -46,8 +47,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function onLoad() {   
     var url = settings.root ? settings.root : (await tabQuery({active: true, currentWindow: true}))[0].url;
-    $("#crawUrl").val(url);
-    $("#maxDepth").val(settings.maxDepth);
+    document.getElementById("crawUrl").value = url;
+    document.getElementById("maxDepth").value = settings.maxDepth;
     refreshPage();
 }
 
@@ -55,50 +56,42 @@ function refreshPage() {
     var crawlButtonText = bgPage.appState == "paused"  ? "Resume" :
                           bgPage.appState == "stopped" ? "Crawl"  :
                                                          "Pause";
-    $("#crawlButton").val(crawlButtonText);
+    document.getElementById("crawlButton").value = crawlButtonText;
     var isDisabledCrawl = bgPage.appState == "paused" && bgPage.getURLsInTab("Crawling").length > 0;
-    $("#crawlButton").attr("disabled", isDisabledCrawl);
+    document.getElementById("crawlButton").disabled = isDisabledCrawl;
     
     var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
-    $("#maxDepth").attr("disabled", isDisabled);
-    $("#crawUrl").attr("disabled", isDisabled);
-    $("#resetButton").attr("disabled", isDisabled);
+    document.getElementById("maxDepth").disabled = isDisabled;
+    document.getElementById("crawUrl").disabled = isDisabled;
+    document.getElementById("resetButton").disabled = isDisabled;
             
-    $("#tabs").html(
-        bgPage.tabs.map(function(tab) {
-            var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
-            var innerTxt = tab + " ("+ count +")";
-            var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
-            return "<li>" + liTxt + "</li>";
-        }).join('')
-    );
+    document.getElementById("tabs").innerHTML = bgPage.tabs.map(function(tab) {
+        var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
+        var innerTxt = tab + " ("+ count +")";
+        var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
+        return "<li>" + liTxt + "</li>";
+    }).join('');
     
-    $("#urlsBeingSearched").html(
-        bgPage.getURLsInTab(currentTab).map((page) => {
-            return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
-        }).join('')
-    );
+    document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
+        return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
+    }).join('');
 
-    $('#allCookies').html(
-        currentTab == 'Cookies' ?
-            (() => {
-                var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
-                    var newKeys = Object.keys(cookie).filter((key) => {
-                        return uniqueKeys.indexOf(key) === -1;
-                    });
-                    return uniqueKeys.concat(newKeys);
-                }, []);
+    document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
+        var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
+            var newKeys = Object.keys(cookie).filter((key) => {
+                return uniqueKeys.indexOf(key) === -1;
+            });
+            return uniqueKeys.concat(newKeys);
+        }, []);
 
-                var keysData = keys.join('\t') + '\n';
+        var keysData = keys.join('\t') + '\n';
 
-                var cookiesData = bgPage.allCookies.map((cookie) => {
-                    return keys.map((key) => {
-                        return (key in cookie) ? cookie[key] : '';
-                    }).join('\t') + '\n';
-                }).join('');
-                return '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>' +
-                       '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
-            })()
-        : ''
-    );
+        var cookiesData = bgPage.allCookies.map((cookie) => {
+            return keys.map((key) => {
+                return (key in cookie) ? cookie[key] : '';
+            }).join('\t') + '\n';
+        }).join('');
+        return '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>' +
+               '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
+    })() : '';
 }
