@@ -101,11 +101,16 @@ async function getNewCookies(page) {
     return cookies.filter(function(cookie) {
         return !(cookieKey(cookie) in allCookiesSeen)
     }).map((cookie) => {
+        var expires = cookie.session ? 'session' : dateFns.distanceInWordsStrict(
+            new Date(),
+            cookie.expirationDate * 1000,
+            {partialMethod: 'ceil'}
+        );
         return {
             domain: cookie.domain,
             path: cookie.path,
             name: cookie.name,
-            expirationDate: cookie.session ? 'session' : moment.unix(cookie.expirationDate).fromNow(true),
+            expirationDate: expires,
             firstSeen: page.url
         };
     });
