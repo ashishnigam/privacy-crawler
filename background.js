@@ -2,7 +2,7 @@ var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
-var startingPage = {};
+var startingPages = [];
 var appState = "stopped";
 
 async function beginCrawl(url, maxDepth) { 
@@ -10,8 +10,11 @@ async function beginCrawl(url, maxDepth) {
     appState = "crawling";
     settings.root = url;
     settings.maxDepth = maxDepth;
-    allPages[url] = {url:url, state:"queued", depth:0};
-    startingPage = allPages[url];
+    var urls = url.split(',');
+    urls.forEach((singleUrl) => {
+        allPages[singleUrl] = {url:singleUrl, state:"queued", depth:0};
+    });
+    startingPages = urls;
     var allCookies = await getCookies();
     console.log("Deleting all cookies");
     await Promise.all(allCookies.map(removeCookie));
@@ -82,7 +85,10 @@ async function crawlPage(page)
     }
 
     var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
-        return startsWith(linkURL, startingPage.url) && !allPages[linkURL];
+        var anyStartsWith = startingPages.some(function(startingPage) {
+            return startsWith(linkURL, startingPage);
+        });
+        return anyStartsWith && !allPages[linkURL];
     }).map((linkURL) => {
         return {
             depth: page.depth+1,
