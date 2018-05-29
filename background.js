@@ -120,15 +120,18 @@ async function crawlMore() {
         chrome.runtime.sendMessage({message: "refresh_page"});
 
         try {
-            newPages = await crawlPage(page);
+            var newPages = await crawlPage(page);
         } catch(e) {
             page.state = "error";
         } finally {
             page.state = page.state != "error" ? "crawled" : page.state;
         }
-        newPages.forEach(function(page) {
-            allPages[page.url] = page;
-        });
+
+        if (page.state != "error") {
+            newPages.forEach(function(page) {
+                allPages[page.url] = page;
+            });
+        }
 
         // Even in the case of error, cookies, might have changed
         var newCookies = await getNewCookies(page);
