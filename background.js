@@ -111,6 +111,14 @@ async function getNewCookies(page) {
     });
 }
 
+function timeoutUntilReject(ms, message) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject(message);
+        }, ms);
+    });
+}
+
 async function crawlMore() {
     appState = "crawling";
 
@@ -120,7 +128,7 @@ async function crawlMore() {
         chrome.runtime.sendMessage({message: "refresh_page"});
 
         try {
-            var newPages = await crawlPage(page);
+            var newPages = await Promise.race([crawlPage(page), timeoutUntilReject(5000)]);
         } catch(e) {
             page.state = "error";
         } finally {
