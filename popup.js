@@ -5,27 +5,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message == 'refresh_page') refreshPage();
 });
 
+function delegate(element, event, selector, handler) {
+    element.addEventListener(event, function(e) {
+        for (var target = e.target; target; target = target.parentNode) {
+            if (target.matches(selector)) {
+                handler(e);
+                break;
+            }
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    $('#crawlButton').on('click', () => {
+    delegate(document.body, 'click', '#crawlButton', () => {
         bgPage.appState == "paused"  ? bgPage.crawlMore() :
         bgPage.appState == "stopped" ? bgPage.beginCrawl($("#crawUrl").val(), parseInt($("#maxDepth").val())) :
                                        bgPage.pause();
         refreshPage();
     });
-    $('#resetButton').on('click', bgPage.reset);
+    delegate(document.body, 'click', '#resetButton', bgPage.reset);
 
-    $(document.body).on('click', '.open-tab-button', function(e) {
+    delegate(document.body, 'click', '.open-tab-button', (e) => {
         e.preventDefault();
         currentTab = $(e.target).data('tab');
         refreshPage();
     });
 
-    $(document.body).on('click', '.link', function(e) {
+    delegate(document.body, 'click', '.link', (e) => {
        e.preventDefault();
        chrome.tabs.create({url: e.target.href, selected:false});
-   });
+    });
 
-    $(document.body).on('click', '.cookies-copy-to-clipboard', function() {
+    delegate(document.body, 'click', '.cookies-copy-to-clipboard', () => {
         copyToClipboard($('#cookies-csv').text())
         $(e.target).after('<span>Copied to clipboard</span>');
     });
