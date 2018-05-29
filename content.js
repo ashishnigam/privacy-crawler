@@ -1,12 +1,29 @@
-
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'get_links') {
-        setTimeout(function() {
-            var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
-                return a.href;
-            });
-            sendResponse({links: links});
-        }, 1000);
-        return true;
+(() => {
+    function timeout(ms) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve();
+            }, ms);
+        });
     }
-});
+
+    var loaded = new Promise((resolve, reject) => {
+        window.addEventListener('load', () => {
+            resolve();
+        });
+    });
+
+    chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+        if (msg.text === 'get_links') {
+            loaded.then(() => {
+                return timeout(750);
+            }).then(() => {
+                var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
+                    return a.href;
+                });
+                sendResponse({links: links});
+            });
+            return true;
+        }
+    });
+})();
