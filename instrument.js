@@ -561,7 +561,8 @@
                                 "geolocation", "language", "languages",
                                 "onLine", "oscpu", "platform", "product",
                                 "productSub", "userAgent", "vendorSub",
-                                "vendor" ];
+                                "vendor", "browserLanguage", "userLanguage",
+                                "appName", "cpuClass" ];
     navigatorProperties.forEach(function(property) {
       instrumentObjectProperty(window.navigator, "window.navigator", property);
     });
