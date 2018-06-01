@@ -2,6 +2,8 @@ var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
+var allSymbolsSeen = {};
+var allSymbols = [];
 var startingPages = [];
 var appState = "stopped";
 
@@ -84,7 +86,6 @@ async function crawlPage(page)
         throw new Error('No response from page');
     }
 
-    console.log(response.symbols_accessed);
     var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
         var anyStartsWith = startingPages.some(function(startingPage) {
             return startsWith(linkURL, startingPage);
@@ -99,7 +100,7 @@ async function crawlPage(page)
     });
 
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
-    return newPages;
+    return [newPages, response.symbols_accessed];
 }
 
 async function getNewCookies(page) {
@@ -123,6 +124,17 @@ async function getNewCookies(page) {
     });
 }
 
+function getNewSymbols(page, symbols) {
+    return symbols.filter((symbol) => {
+        return !(symbol in allSymbolsSeen);
+    }).map((symbol) => {
+        return {
+            name: symbol,
+            firstSeen: page.url
+        };
+    });
+}
+
 function timeoutUntilReject(ms, message) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -139,10 +151,13 @@ async function crawlMore() {
         page.state = "crawling";
         chrome.runtime.sendMessage({message: "refresh_page"});
 
+        var newPages;
+        var symbolsAccessed;
         try {
-            var newPages = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
+            [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
         } catch(e) {
             page.state = "error";
+            symbolsAccessed = [];
         } finally {
             page.state = page.state != "error" ? "crawled" : page.state;
         }
@@ -158,6 +173,11 @@ async function crawlMore() {
         newCookies.forEach(function(cookie) {
             allCookiesSeen[cookieKey(cookie)] = true
             allCookies.push(cookie)
+        });
+
+        var newSymbols = getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
+            allSymbolsSeen[symbol.name] = true;
+            allSymbols.push(symbol);
         });
     }
 
@@ -192,5 +212,7 @@ function reset() {
     allPages = {};  
     allCookiesSeen = {};
     allCookies = [];
+    allSymbolsSeen = {};
+    allSymbols = [];
     chrome.runtime.sendMessage({message: "refresh_page"});
 }

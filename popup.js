@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var now = new Date();
         var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: reportDataUri(now, bgPage.allCookies, downloadReportStyle()),
+            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, downloadReportStyle()),
             filename: filename
         });
     });
@@ -83,13 +83,13 @@ function refreshPage() {
     document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
         var now = new Date();
         return `<div><button class="download-report">Download report</button></div>
-                <iframe src="${ reportDataUri(now, bgPage.allCookies, inPageReportStyle())}"></iframe>`;
+                <iframe src="${ reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, inPageReportStyle())}"></iframe>`;
     })() : '';
 }
 
-function reportDataUri(now, cookies, extraScript) {
+function reportDataUri(now, cookies, symbols, extraScript) {
     var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
-    var html = report(generated, cookies, extraScript);
+    var html = report(generated, cookies, symbols, extraScript);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
 }
 
@@ -101,7 +101,7 @@ function downloadReportStyle() {
     return `<style>body {padding: 8px}></style>`;
 }
 
-function report(generated, cookies, extraScript) {
+function report(generated, cookies, symbols, extraScript) {
     return `<!doctype html>
         <html lang="en">
         <head>
@@ -157,7 +157,26 @@ function report(generated, cookies, extraScript) {
                   </tr>
                 `).join('') }
                 </tbody>
-            </table>  
+            </table>
+          ` }
+
+            <h2>Fingerprinting (${ symbols.length })</h2>
+
+            ${ symbols.length == 0 ? '<p>No data accessed that can be used to fingerprint</p>' : `
+                <table>
+                <thead>
+                    <th>name</th>
+                    <th>first seen</th>
+                </thead>
+                <tbody>
+                ${ symbols.map((symbol) => `
+                    <tr>
+                        <td>${ symbol['name'] }</td>
+                        <td>${ symbol['firstSeen'] }</td>
+                    </tr>
+                `).join('') }
+                </tbody>
+                </table>
             ` }
         </body>`;
 } 
