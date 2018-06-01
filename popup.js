@@ -36,10 +36,13 @@ document.addEventListener('DOMContentLoaded', function() {
        chrome.tabs.create({url: e.target.href, selected:false});
     });
 
-    delegate(document.body, 'click', '.cookies-copy-to-clipboard', (e) => {
-        copyToClipboard(document.getElementById('cookies-csv').innerText)
-        var message = new DOMParser().parseFromString('<span>Copied to clipboard</span>', "text/html").body.firstChild;
-        e.target.parentNode.insertBefore(message, e.target.nextSibling);
+    delegate(document.body, 'click', '.download-report', (e) => {
+        var now = new Date();
+        var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
+        chrome.downloads.download({
+            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, downloadReportStyle()),
+            filename: filename
+        });
     });
 
     onLoad();
@@ -76,22 +79,106 @@ function refreshPage() {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
     }).join('');
 
+
     document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
-        var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
-            var newKeys = Object.keys(cookie).filter((key) => {
-                return uniqueKeys.indexOf(key) === -1;
-            });
-            return uniqueKeys.concat(newKeys);
-        }, []);
-
-        var keysData = keys.join('\t') + '\n';
-
-        var cookiesData = bgPage.allCookies.map((cookie) => {
-            return keys.map((key) => {
-                return (key in cookie) ? cookie[key] : '';
-            }).join('\t') + '\n';
-        }).join('');
-        return '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>' +
-               '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
+        var now = new Date();
+        return `<div><button class="download-report">Download report</button></div>
+                <iframe src="${ reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, inPageReportStyle())}"></iframe>`;
     })() : '';
 }
+
+function reportDataUri(now, cookies, symbols, extraScript) {
+    var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
+    var html = report(generated, cookies, symbols, extraScript);
+    return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
+}
+
+function inPageReportStyle() {
+    return `<style>body {padding: 0}></style>`;
+}
+
+function downloadReportStyle() {
+    return `<style>body {padding: 8px}></style>`;
+}
+
+function report(generated, cookies, symbols, extraScript) {
+    return `<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Privacy Report</title>
+          <style>
+            body {
+              margin: 0;
+              font-family: monospace;
+            }
+            table {
+              border-collapse: collapse;
+            }
+            th {
+              text-align: left;
+            }
+            td,
+            th {
+              white-space: nowrap;
+              padding: 3px 5px;
+            }
+            tr:nth-child(even) > td {
+              background: #f3f3f3;
+              -webkit-print-color-adjust: exact;
+            }
+          </style>
+          ${ extraScript }
+        </head>
+        <body>
+          <h1>Privacy Report</h1>
+
+          <p>Generated: ${ generated }</p>
+
+          <h2>Cookies (${ cookies.length })</h2>
+
+          ${ cookies.length == 0 ? '<p>No cookies found</p>' : `
+              <table>
+                <thead>
+                  <th>domain</th>
+                  <th>path</th>
+                  <th>name</th>
+                  <th>expiry</th>
+                  <th>first seen</th>
+                </thead>
+                <tbody>
+                ${ cookies.map((cookie) => `
+                  <tr>
+                    <td>${ cookie['domain'] }</td>
+                    <td>${ cookie['path'] }</td>
+                    <td>${ cookie['name'] }</td>
+                    <td>${ cookie['expirationDate'] }</td>
+                    <td>${ cookie['firstSeen'] }</td>
+                  </tr>
+                `).join('') }
+                </tbody>
+            </table>
+          ` }
+
+            <h2>Fingerprinting (${ symbols.length })</h2>
+
+            ${ symbols.length == 0 ? '<p>No data accessed that can be used to fingerprint</p>' : `
+                <table>
+                <thead>
+                    <th>name</th>
+                    <th>first seen at script</th>
+                    <th>first seen at page</th>
+                </thead>
+                <tbody>
+                ${ symbols.map((symbol) => `
+                    <tr>
+                        <td>${ symbol['name'] }</td>
+                        <td>${ symbol['scriptUrl'] }</td>
+                        <td>${ symbol['firstSeen'] }</td>
+                    </tr>
+                `).join('') }
+                </tbody>
+                </table>
+            ` }
+        </body>`;
+} 

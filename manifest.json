@@ -11,8 +11,12 @@
    "content_scripts": [{
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
    }],
+   "web_accessible_resources": [
+      "instrument.js"
+   ],
    "description": "Crawls a site to find all cookies",
    "icons": {
       "16": "images/icon48.png",
@@ -29,6 +33,7 @@
       "activeTab",
       "clipboardWrite",
       "cookies",
+      "downloads",
       "tabs",
       "http://*/*",
       "https://*/*"
