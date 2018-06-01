@@ -37,9 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     delegate(document.body, 'click', '.download-report', (e) => {
-        var dataUrl = 'data:text/plain,' + document.getElementById('cookies-csv').innerText;
-        var filename = 'privacy-report-' + dateFns.format(new Date(), 'YYYY-MM-DD-HH-mm-ss') + '.txt';
-        console.log(filename);
+        var now = new Date();
+        var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
+        var html = report(generated, bgPage.allCookies);
+        var dataUrl = 'data:text/html,' + html;
+        var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
             url: dataUrl,
             filename: filename
@@ -95,7 +97,64 @@ function refreshPage() {
                 return (key in cookie) ? cookie[key] : '';
             }).join('\t') + '\n';
         }).join('');
+
         return '<div><button class="download-report">Download report</button></div>' +
                '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
     })() : '';
 }
+
+function report(generated, cookies) {
+    return `<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Privacy Report</title>
+          <style>
+            body {
+              font-family: monospace;
+            }
+            table {
+              border-collapse: collapse;
+            }
+            th {
+              text-align: left;
+            }
+            td,
+            th {
+              white-space: nowrap;
+              padding: 3px 5px;
+            }
+            tr:nth-child(even) > td {
+              background: #f3f3f3;
+              -webkit-print-color-adjust: exact;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Privacy Report</h1>
+
+          <p>Generated: ${ generated }</p>
+
+          <h2>Cookies (${ cookies.length })</h2>
+          <table>
+            <thead>
+              <th>domain</th>
+              <th>path</th>
+              <th>name</th>
+              <th>expiry</th>
+              <th>first seen</th>
+            </thead>
+            <tbody>
+            ${ cookies.map((cookie) => `
+              <tr>
+                <td>${ cookie['domain'] }</td>
+                <td>${ cookie['path'] }</td>
+                <td>${ cookie['name'] }</td>
+                <td>${ cookie['expirationDate'] }</td>
+                <td>${ cookie['firstSeen'] }</td>
+              </tr>
+            `).join('') }
+            </tbody>
+          </table>
+        </body>`;
+} 
