@@ -31,6 +31,7 @@ var event_id = Math.random();
 var scriptElement = document.createElement('script');
 scriptElement.src = chrome.extension.getURL('instrument.js');
 scriptElement.setAttribute('data-event-id', event_id);
+scriptElement.async = false;
 scriptElement.onload = () => {
     scriptElement.remove();
 };
