@@ -7,6 +7,40 @@ var allSymbols = [];
 var startingPages = [];
 var appState = "stopped";
 
+// There are multiple content scripts, so we need a bit of state
+// to accumulate them
+var latestLinks = [];
+var latestSymbols = [];
+var messagesReceived = null;
+
+chrome.runtime.onConnect.addListener((port) => {
+    port.onMessage.addListener((msg) => {
+        if (appState == 'stopped') return;
+
+        msg.links.forEach((link) => {
+            latestLinks.push(link);
+        });
+        msg.symbols_accessed.forEach((symbol) => {
+            latestSymbols.push(symbol);
+        });
+
+        messagesReceived();
+    });
+});
+
+function clearAnalysis() {
+    latestLinks = [];
+    latestSymbols = [];
+}
+
+function waitForAnalysis() {
+    return new Promise((resolve, reject) => {
+        messagesReceived = debounce(() => {
+            resolve({links: latestLinks, symbols_accessed: latestSymbols})
+        }, 2000);
+    });
+}
+
 async function beginCrawl(url, maxDepth) { 
     reset();    
     appState = "crawling";
@@ -73,6 +107,7 @@ function cookieKey(cookie) {
 async function crawlPage(page)
 {
     console.log("Starting Crawl --> "+JSON.stringify(page));
+    clearAnalysis();
 
     var tabs = await tabQuery({active: true, currentWindow: true});
     chrome.tabs.update(tabs[0].id, {
@@ -80,7 +115,7 @@ async function crawlPage(page)
     });
     await onTabStatusComplete(tabs[0].id);
 
-    var response = await sendMessage(tabs[0].id, {text: 'get_analysis'});
+    var response = await waitForAnalysis();
     console.log('error',  chrome.runtime.lastError);
     if (response == null) {
         throw new Error('No response from page');

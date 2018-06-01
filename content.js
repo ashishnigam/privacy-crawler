@@ -6,24 +6,21 @@ function timeout(ms) {
     });
 }
 
+var port = chrome.runtime.connect();
+
 var loaded = new Promise((resolve, reject) => {
     window.addEventListener('load', () => {
         resolve();
     });
 });
 
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    if (msg.text === 'get_analysis') {
-        loaded.then(() => {
-            return timeout(6000);
-        }).then(() => {
-            var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
-                return a.href;
-            });
-            sendResponse({links: links, symbols_accessed: symbols_accessed});
-        });
-        return true;
-    }
+loaded.then(() => {
+    return timeout(6000);
+}).then(() => {
+    var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
+        return a.href;
+    });
+    port.postMessage({links: links, symbols_accessed: symbols_accessed});
 });
 
 var event_id = Math.random();
