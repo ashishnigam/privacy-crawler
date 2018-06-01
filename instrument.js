@@ -570,7 +570,7 @@
     // Access to screen properties
     //instrumentObject(window.screen, "window.screen");
     // TODO: why do we instrument only two screen properties
-    var screenProperties =  [ "pixelDepth", "colorDepth" ];
+    var screenProperties =  [ "pixelDepth", "colorDepth", "width", "height" ];
     screenProperties.forEach(function(property) {
       instrumentObjectProperty(window.screen, "window.screen", property);
     });
