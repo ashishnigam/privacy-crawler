@@ -25,9 +25,9 @@ loaded.then(() => {
 
 var event_id = Math.random();
 
-// Deliberalty setting the text of the script rather than using src,
-// since this results in the script running before existing ones in
-// the page
+// Setting the text of the script rather than using src,
+// since this results in the script running before existing
+// ones in the page
 var scriptElement = document.createElement('script');
 scriptElement.text = '(' + instrument + ')();'
 scriptElement.setAttribute('data-event-id', event_id);
