@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var now = new Date();
         var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
         var html = report(generated, bgPage.allCookies);
-        var dataUrl = 'data:text/html,' + encodeURIComponent(html);
+        var dataUrl = 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
         var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
             url: dataUrl,
