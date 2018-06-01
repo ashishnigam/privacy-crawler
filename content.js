@@ -38,4 +38,8 @@
 
     var parent = document.documentElement;
     parent.insertBefore(scriptElement, parent.firstChild);
+
+    document.addEventListener(event_id, (e) => {
+        console.log(e);
+    });
 })();
