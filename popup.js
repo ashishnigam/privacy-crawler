@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var now = new Date();
         var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: reportDataUri(now, bgPage.allCookies),
+            url: reportDataUri(now, bgPage.allCookies, downloadReportStyle()),
             filename: filename
         });
     });
@@ -79,34 +79,29 @@ function refreshPage() {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
     }).join('');
 
+
     document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
-        var keys = bgPage.allCookies.reduce((uniqueKeys, cookie) => {
-            var newKeys = Object.keys(cookie).filter((key) => {
-                return uniqueKeys.indexOf(key) === -1;
-            });
-            return uniqueKeys.concat(newKeys);
-        }, []);
-
-        var keysData = keys.join('\t') + '\n';
-
-        var cookiesData = bgPage.allCookies.map((cookie) => {
-            return keys.map((key) => {
-                return (key in cookie) ? cookie[key] : '';
-            }).join('\t') + '\n';
-        }).join('');
-
-        return '<div><button class="download-report">Download report</button></div>' +
-               '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
+        var now = new Date();
+        return `<div><button class="download-report">Download report</button></div>
+                <iframe src="${ reportDataUri(now, bgPage.allCookies, inPageReportStyle())}"></iframe>`;
     })() : '';
 }
 
-function reportDataUri(now, cookies) {
+function reportDataUri(now, cookies, extraScript) {
     var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
-    var html = report(generated, cookies);
+    var html = report(generated, cookies, extraScript);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
 }
 
-function report(generated, cookies) {
+function inPageReportStyle() {
+    return `<style>body {padding: 0}></style>`;
+}
+
+function downloadReportStyle() {
+    return `<style>body {padding: 8px}></style>`;
+}
+
+function report(generated, cookies, extraScript) {
     return `<!doctype html>
         <html lang="en">
         <head>
@@ -114,6 +109,7 @@ function report(generated, cookies) {
           <title>Privacy Report</title>
           <style>
             body {
+              margin: 0;
               font-family: monospace;
             }
             table {
@@ -132,6 +128,7 @@ function report(generated, cookies) {
               -webkit-print-color-adjust: exact;
             }
           </style>
+          ${ extraScript }
         </head>
         <body>
           <h1>Privacy Report</h1>

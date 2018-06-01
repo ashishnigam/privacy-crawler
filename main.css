@@ -69,10 +69,8 @@ body
     background-color: #f8f8f8
 }
 
-#allCookies {
-    white-space: pre;
-}
-
-#cookies-csv {
-    overflow-x: scroll;
+iframe {
+    border: none;
+    height: 305px;
+    width:  600px;
 }
