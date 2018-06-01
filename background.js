@@ -140,7 +140,7 @@ async function crawlMore() {
         chrome.runtime.sendMessage({message: "refresh_page"});
 
         try {
-            var newPages = await Promise.race([crawlPage(page), timeoutUntilReject(5000)]);
+            var newPages = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
         } catch(e) {
             page.state = "error";
         } finally {

@@ -16,7 +16,7 @@
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         if (msg.text === 'get_analysis') {
             loaded.then(() => {
-                return timeout(750);
+                return timeout(6000);
             }).then(() => {
                 var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
                     return a.href;
