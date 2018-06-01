@@ -78,12 +78,13 @@ async function crawlPage(page)
     });
     await onTabStatusComplete(tabs[0].id);
 
-    var response = await sendMessage(tabs[0].id, {text: 'get_links'});
+    var response = await sendMessage(tabs[0].id, {text: 'get_analysis'});
     console.log('error',  chrome.runtime.lastError);
     if (response == null) {
         throw new Error('No response from page');
     }
 
+    console.log(response.symbols_accessed);
     var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
         var anyStartsWith = startingPages.some(function(startingPage) {
             return startsWith(linkURL, startingPage);

@@ -14,14 +14,14 @@
     });
 
     chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-        if (msg.text === 'get_links') {
+        if (msg.text === 'get_analysis') {
             loaded.then(() => {
                 return timeout(750);
             }).then(() => {
                 var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
                     return a.href;
                 });
-                sendResponse({links: links});
+                sendResponse({links: links, symbols_accessed: symbols_accessed});
             });
             return true;
         }
@@ -39,7 +39,13 @@
     var parent = document.documentElement;
     parent.insertBefore(scriptElement, parent.firstChild);
 
+    var symbols_accessed = [];
     document.addEventListener(event_id, (e) => {
-        console.log(e);
+        e.detail.forEach((d) => {
+            var name = d.content.symbol;
+            if (symbols_accessed.indexOf(name) === -1) {
+                symbols_accessed.push(name);
+            }
+        });
     });
 })();
