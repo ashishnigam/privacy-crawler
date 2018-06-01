@@ -13,6 +13,9 @@
       "js": ["content.js"],
       "run_at": "document_start"
    }],
+   "web_accessible_resources": [
+      "instrument.js"
+   ],
    "description": "Crawls a site to find all cookies",
    "icons": {
       "16": "images/icon48.png",
