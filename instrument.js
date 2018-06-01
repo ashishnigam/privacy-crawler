@@ -175,6 +175,7 @@
       return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
     }
 
+    var urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
     function getOriginatingScriptContext(getCallStack=false) {
       var trace = getStackTrace().trim().split('\n');
 
@@ -200,7 +201,6 @@
        * We store the part between the FILENAME and the LINE_NO in scriptLocEval
        */
       try{
-        var scriptUrl = "";
         var scriptLocEval = ""; // for eval or Function calls
         var callSiteParts = callSite.split(" at ");
         var funcName = callSiteParts[0] || '';
@@ -209,12 +209,15 @@
         var lineNo = items[items.length-2];
         var scriptFileName = items[items.length-3] || '';
         var lineNoIdx = scriptFileName.indexOf(" line ");  // line in the URL means eval or Function
-        if (lineNoIdx == -1){
-          scriptUrl = scriptFileName;  // TODO: sometimes we have filename only, e.g. XX.js
-        }else{
-          scriptUrl = scriptFileName.slice(0, lineNoIdx);
+        if (lineNoIdx != -1) {
           scriptLocEval = scriptFileName.slice(lineNoIdx+1, scriptFileName.length);
         }
+
+        var line = trace.find((line) => {
+          return line.match(urlRegex);
+        });
+        var scriptUrl = line ? line.match(urlRegex)[0] : 'unknown';
+
         var callContext = {
           scriptUrl: scriptUrl,
           scriptLine: lineNo,

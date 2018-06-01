@@ -37,11 +37,16 @@ var parent = document.documentElement;
 parent.insertBefore(scriptElement, parent.firstChild);
 
 var symbols_accessed = [];
+var symbolNames = {};
 document.addEventListener(event_id, (e) => {
     e.detail.forEach((d) => {
         var name = d.content.symbol;
-        if (symbols_accessed.indexOf(name) === -1) {
-            symbols_accessed.push(name);
+        if (!(name in symbolNames)) {
+            symbolNames[name] = true;
+            symbols_accessed.push({
+                name: name,
+                scriptUrl: d.content.scriptUrl,
+            });
         }
     });
 });

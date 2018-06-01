@@ -164,7 +164,8 @@ function getNewSymbols(page, symbols) {
         return !(symbol in allSymbolsSeen);
     }).map((symbol) => {
         return {
-            name: symbol,
+            name: symbol.name,
+            scriptUrl: symbol.scriptUrl,
             firstSeen: page.url
         };
     });

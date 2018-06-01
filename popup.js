@@ -166,12 +166,14 @@ function report(generated, cookies, symbols, extraScript) {
                 <table>
                 <thead>
                     <th>name</th>
-                    <th>first seen</th>
+                    <th>first seen at script</th>
+                    <th>first seen at page</th>
                 </thead>
                 <tbody>
                 ${ symbols.map((symbol) => `
                     <tr>
                         <td>${ symbol['name'] }</td>
+                        <td>${ symbol['scriptUrl'] }</td>
                         <td>${ symbol['firstSeen'] }</td>
                     </tr>
                 `).join('') }
