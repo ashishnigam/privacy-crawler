@@ -463,7 +463,6 @@
       // Store original descriptor in closure
       var propDesc = Object.getPropertyDescriptor(object, propertyName);
       if (!propDesc){
-        console.error("Property descriptor not found for", objectName, propertyName, object);
         return;
       }
 
