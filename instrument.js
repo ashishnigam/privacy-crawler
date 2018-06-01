@@ -65,7 +65,6 @@
      */
 
     var testing = false;
-    console.log("Currently testing?",testing);
 
     // Recursively generates a path for an element
     function getPathToDomElement(element, visibilityAttr=false) {
