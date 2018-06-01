@@ -15,7 +15,7 @@ var loaded = new Promise((resolve, reject) => {
 });
 
 loaded.then(() => {
-    return timeout(6000);
+    return timeout(1000);
 }).then(() => {
     var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
         return a.href;
@@ -25,8 +25,11 @@ loaded.then(() => {
 
 var event_id = Math.random();
 
+// Setting the text of the script rather than using src,
+// since this results in the script running before existing
+// ones in the page
 var scriptElement = document.createElement('script');
-scriptElement.src = chrome.extension.getURL('instrument.js');
+scriptElement.text = '(' + instrument + ')();'
 scriptElement.setAttribute('data-event-id', event_id);
 scriptElement.async = false;
 scriptElement.onload = () => {

@@ -37,7 +37,7 @@ function waitForAnalysis() {
     return new Promise((resolve, reject) => {
         messagesReceived = debounce(() => {
             resolve({links: latestLinks, symbols_accessed: latestSymbols})
-        }, 2000);
+        }, 500);
     });
 }
 
@@ -161,7 +161,7 @@ async function getNewCookies(page) {
 
 function getNewSymbols(page, symbols) {
     return symbols.filter((symbol) => {
-        return !(symbol in allSymbolsSeen);
+        return !(symbol.name in allSymbolsSeen);
     }).map((symbol) => {
         return {
             name: symbol.name,

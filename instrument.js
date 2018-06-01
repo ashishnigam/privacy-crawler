@@ -1,5 +1,18 @@
+function instrument() {
 
-(function () {
+  // Monkey patch the environment to speed up time, since some
+  // tracking pixels and fingerprinting javascript only runs
+  // after a delay
+  var originalTimeout = setTimeout;
+  window.setTimeout = function(func, time) {
+    return originalTimeout(func, time/20);
+  }
+
+  var originalInterval = setInterval;
+  window.setInterval = function(func, time) {
+    return originalInterval(func, time/20);
+  }
+
   // Intrumentation injection code is based on OpenWPM, in-term based on privacybadgerfirefox
   // https://github.com/EFForg/privacybadgerfirefox/blob/master/data/fingerprinting.js
 
@@ -640,4 +653,4 @@
     instrumentObject(window.ScriptProcessorNode.prototype, "ScriptProcessorNode");
 
     console.log("Successfully started all instrumentation.");
-})();
+}
