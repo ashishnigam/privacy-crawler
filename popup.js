@@ -36,10 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
        chrome.tabs.create({url: e.target.href, selected:false});
     });
 
-    delegate(document.body, 'click', '.cookies-copy-to-clipboard', (e) => {
-        copyToClipboard(document.getElementById('cookies-csv').innerText)
-        var message = new DOMParser().parseFromString('<span>Copied to clipboard</span>', "text/html").body.firstChild;
-        e.target.parentNode.insertBefore(message, e.target.nextSibling);
+    delegate(document.body, 'click', '.download-report', (e) => {
+        var dataUrl = 'data:text/plain,' + document.getElementById('cookies-csv').innerText;
+        var filename = 'privacy-report-' + dateFns.format(new Date(), 'YYYY-MM-DD-HH-mm-ss') + '.txt';
+        console.log(filename);
+        chrome.downloads.download({
+            url: dataUrl,
+            filename: filename
+        });
     });
 
     onLoad();
@@ -91,7 +95,7 @@ function refreshPage() {
                 return (key in cookie) ? cookie[key] : '';
             }).join('\t') + '\n';
         }).join('');
-        return '<div><button class="cookies-copy-to-clipboard">Copy table to clipboard</button></div>' +
+        return '<div><button class="download-report">Download report</button></div>' +
                '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
     })() : '';
 }

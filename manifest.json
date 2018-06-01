@@ -29,6 +29,7 @@
       "activeTab",
       "clipboardWrite",
       "cookies",
+      "downloads",
       "tabs",
       "http://*/*",
       "https://*/*"
