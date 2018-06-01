@@ -38,12 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     delegate(document.body, 'click', '.download-report', (e) => {
         var now = new Date();
-        var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
-        var html = report(generated, bgPage.allCookies);
-        var dataUrl = 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
         var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: dataUrl,
+            url: reportDataUri(now, bgPage.allCookies),
             filename: filename
         });
     });
@@ -101,6 +98,12 @@ function refreshPage() {
         return '<div><button class="download-report">Download report</button></div>' +
                '<div id="cookies-csv">' + keysData + cookiesData + '</div>';
     })() : '';
+}
+
+function reportDataUri(now, cookies) {
+    var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
+    var html = report(generated, cookies);
+    return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
 }
 
 function report(generated, cookies) {
