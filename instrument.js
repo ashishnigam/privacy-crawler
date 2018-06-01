@@ -1,5 +1,4 @@
-
-(function () {
+function instrument() {
   // Intrumentation injection code is based on OpenWPM, in-term based on privacybadgerfirefox
   // https://github.com/EFForg/privacybadgerfirefox/blob/master/data/fingerprinting.js
 
@@ -640,4 +639,4 @@
     instrumentObject(window.ScriptProcessorNode.prototype, "ScriptProcessorNode");
 
     console.log("Successfully started all instrumentation.");
-})();
+}
