@@ -161,7 +161,7 @@ async function getNewCookies(page) {
 
 function getNewSymbols(page, symbols) {
     return symbols.filter((symbol) => {
-        return !(symbol in allSymbolsSeen);
+        return !(symbol.name in allSymbolsSeen);
     }).map((symbol) => {
         return {
             name: symbol.name,
