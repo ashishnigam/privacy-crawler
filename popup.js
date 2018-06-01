@@ -136,25 +136,28 @@ function report(generated, cookies, extraScript) {
           <p>Generated: ${ generated }</p>
 
           <h2>Cookies (${ cookies.length })</h2>
-          <table>
-            <thead>
-              <th>domain</th>
-              <th>path</th>
-              <th>name</th>
-              <th>expiry</th>
-              <th>first seen</th>
-            </thead>
-            <tbody>
-            ${ cookies.map((cookie) => `
-              <tr>
-                <td>${ cookie['domain'] }</td>
-                <td>${ cookie['path'] }</td>
-                <td>${ cookie['name'] }</td>
-                <td>${ cookie['expirationDate'] }</td>
-                <td>${ cookie['firstSeen'] }</td>
-              </tr>
-            `).join('') }
-            </tbody>
-          </table>
+
+          ${ cookies.length == 0 ? '<p>No cookies found</p>' : `
+              <table>
+                <thead>
+                  <th>domain</th>
+                  <th>path</th>
+                  <th>name</th>
+                  <th>expiry</th>
+                  <th>first seen</th>
+                </thead>
+                <tbody>
+                ${ cookies.map((cookie) => `
+                  <tr>
+                    <td>${ cookie['domain'] }</td>
+                    <td>${ cookie['path'] }</td>
+                    <td>${ cookie['name'] }</td>
+                    <td>${ cookie['expirationDate'] }</td>
+                    <td>${ cookie['firstSeen'] }</td>
+                  </tr>
+                `).join('') }
+                </tbody>
+            </table>  
+            ` }
         </body>`;
 } 
