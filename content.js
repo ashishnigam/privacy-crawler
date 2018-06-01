@@ -15,7 +15,7 @@ var loaded = new Promise((resolve, reject) => {
 });
 
 loaded.then(() => {
-    return timeout(6000);
+    return timeout(1000);
 }).then(() => {
     var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
         return a.href;

@@ -37,7 +37,7 @@ function waitForAnalysis() {
     return new Promise((resolve, reject) => {
         messagesReceived = debounce(() => {
             resolve({links: latestLinks, symbols_accessed: latestSymbols})
-        }, 2000);
+        }, 500);
     });
 }
 
