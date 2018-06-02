@@ -4,6 +4,7 @@ body {
     overflow-x: hidden;
     margin: 0;
     padding: 8px;
+    width: 600px;
 }
 
 input[type="text"],
@@ -33,10 +34,6 @@ button:focus:not([disabled]) {
 button:active:not([disabled]) {
     background: #d2d2d2;
     outline: none;
-}
-
-#content {
-    width: 600px;
 }
 
 #tabsContainer {
