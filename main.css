@@ -62,12 +62,9 @@ nav {
     margin-right: 10px;
 }
 
-.download-report {
-    margin-right: 115px;
-}
-
 #tabs-right  {
     font-size: 10px;
+    margin-left: auto;
 }
 
 .nav-item,
