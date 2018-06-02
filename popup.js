@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var now = new Date();
         var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, downloadReportStyle()),
+            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols),
             filename: filename
         });
     });
@@ -79,34 +79,29 @@ function refreshPage() {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
     }).join('');
 
-
     document.getElementById("allCookies").innerHTML = currentTab == 'Report' ? (() => {
-        var now = new Date();
-        return `<div><button class="download-report">Download report</button></div>
-                <iframe src="${ reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, inPageReportStyle())}"></iframe>`;
+        return `
+            <div><button class="download-report">Download report</button></div>
+            <div id="report-outer-root"></div>
+        `;
     })() : '';
+    var now = new Date();
+    document.getElementById("report-outer-root").attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(now, bgPage.allCookies, bgPage.allSymbols);
 }
 
-function reportDataUri(now, cookies, symbols, extraScript) {
+function reportDataUri(now, cookies, symbols) {
     var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
-    var html = report(generated, cookies, symbols, extraScript);
+    var html = report(generated, cookies, symbols);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
-}
-
-function inPageReportStyle() {
-    return `<style>body {padding: 0}></style>`;
-}
-
-function downloadReportStyle() {
-    return `<style>body {padding: 8px}></style>`;
 }
 
 function reportStyle() {
     return `
         <style>
-        body {
-          margin: 0;
+        .report-root {
           font-family: monospace;
+          color: #000000;
+          font: normal normal normal 13px/normal monospace;
         }
         table {
           border-collapse: collapse;
@@ -128,71 +123,72 @@ function reportStyle() {
 
 function reportContent(generated, cookies, symbols) {
     return `
-        <h1>Privacy Report</h1>
+        <div class="report-root">
+            <h1>Privacy Report</h1>
 
-        <p>Generated: ${ generated }</p>
+            <p>Generated: ${ generated }</p>
 
-        <h2>Cookies (${ cookies.length })</h2>
+            <h2>Cookies (${ cookies.length })</h2>
 
-        ${ cookies.length == 0 ? `
-            <p>No cookies found</p>` : `
-            <table>
-            <thead>
-                <tr>
-                    <th>domain</th>
-                    <th>path</th>
-                    <th>name</th>
-                    <th>expiry</th>
-                    <th>first seen</th>
-                </tr>
-            </thead>
-            <tbody>
-            ${ cookies.map((cookie) => `
-                <tr>
-                    <td>${ cookie['domain'] }</td>
-                    <td>${ cookie['path'] }</td>
-                    <td>${ cookie['name'] }</td>
-                    <td>${ cookie['expirationDate'] }</td>
-                    <td>${ cookie['firstSeen'] }</td>
-                </tr>
-            `).join('') }
-            </tbody>
-            </table>
-        ` }
-        <h2>Fingerprinting (${ symbols.length })</h2>
+            ${ cookies.length == 0 ? `
+                <p>No cookies found</p>` : `
+                <table>
+                <thead>
+                    <tr>
+                        <th>domain</th>
+                        <th>path</th>
+                        <th>name</th>
+                        <th>expiry</th>
+                        <th>first seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                ${ cookies.map((cookie) => `
+                    <tr>
+                        <td>${ cookie['domain'] }</td>
+                        <td>${ cookie['path'] }</td>
+                        <td>${ cookie['name'] }</td>
+                        <td>${ cookie['expirationDate'] }</td>
+                        <td>${ cookie['firstSeen'] }</td>
+                    </tr>
+                `).join('') }
+                </tbody>
+                </table>
+            ` }
+            <h2>Fingerprinting (${ symbols.length })</h2>
 
-        ${ symbols.length == 0 ? `
-            <p>No data accessed that can be used to fingerprint</p>` : `
-            <table>
-            <thead>
-                <tr>
-                    <th>name</th>
-                    <th>first seen at script</th>
-                    <th>first seen at page</th>
-                </tr>
-            </thead>
-            <tbody>
-            ${ symbols.map((symbol) => `
-                <tr>
-                    <td>${ symbol['name'] }</td>
-                    <td>${ symbol['scriptUrl'] }</td>
-                    <td>${ symbol['firstSeen'] }</td>
-                </tr>
-                `).join('')
-            }
-            </tbody>
-            </table>
-        ` }`  
+            ${ symbols.length == 0 ? `
+                <p>No data accessed that can be used to fingerprint</p>` : `
+                <table>
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>first seen at script</th>
+                        <th>first seen at page</th>
+                    </tr>
+                </thead>
+                <tbody>
+                ${ symbols.map((symbol) => `
+                    <tr>
+                        <td>${ symbol['name'] }</td>
+                        <td>${ symbol['scriptUrl'] }</td>
+                        <td>${ symbol['firstSeen'] }</td>
+                    </tr>
+                    `).join('')
+                }
+                </tbody>
+                </table>
+            ` }
+        </div>`;
 }
 
-function report(generated, cookies, symbols, extraScript) {
+function report(generated, cookies, symbols) {
     return `<!doctype html>
         <html lang="en">
         <head>
           <meta charset="utf-8">
           <title>Privacy Report</title>
           ${ reportStyle() }
-          ${ extraScript }
         </head>
         <body>
         ${ reportContent(generated, cookies, symbols) }

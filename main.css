@@ -69,8 +69,6 @@ body
     background-color: #f8f8f8
 }
 
-iframe {
-    border: none;
-    height: 305px;
-    width:  600px;
+#report-outer-root {
+    overflow-x: scroll;
 }
