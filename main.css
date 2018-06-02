@@ -48,6 +48,7 @@ nav {
     margin-top: 1em;
     padding-left: 60px;
     display: flex;
+    align-items: center;
 }
 
 #tabs-left,
@@ -58,7 +59,11 @@ nav {
 }
 
 #tabs-left {
-    margin-right: 185px;
+    margin-right: 10px;
+}
+
+.download-report {
+    margin-right: 115px;
 }
 
 #tabs-right  {
@@ -74,6 +79,7 @@ nav {
 .open-tab-button {
     text-decoration: none;
     padding: 5px;
+    white-space: nowrap;
 }
 
 li.open-tab-button {

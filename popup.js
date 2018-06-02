@@ -90,16 +90,12 @@ function refreshPage() {
 
     document.getElementById("allCookies").innerHTML = '';
     document.getElementById("allCookies").appendChild(currentTab == 'Report' ? (() => {
-        var buttonWrapper = document.createElement('div');
-        buttonWrapper.innerHTML = `<button class="download-report">Download report</button>`;
-
         var reportOuterRoot = document.createElement('div');
         reportOuterRoot.setAttribute('id', 'report-outer-root');
         var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
         reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(generated, bgPage.allCookies, bgPage.allSymbols);
 
         var fragment = document.createDocumentFragment();
-        fragment.appendChild(buttonWrapper);
         fragment.appendChild(reportOuterRoot);
         return fragment;
     })() : document.createDocumentFragment());
