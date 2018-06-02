@@ -138,7 +138,7 @@ function reportContent(generated, cookies, symbols) {
         <div class="report-root">
             <h1>Privacy Report</h1>
 
-            <p>Generated: ${ generated }</p>
+            <p>Generated: ${ generated }<br>Root: ${ settings.root }<br>Depth: ${ settings.maxDepth }</p>
 
             <h2>Cookies (${ cookies.length })</h2>
 
