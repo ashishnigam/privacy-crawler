@@ -47,18 +47,21 @@ nav {
     font-size: 99%;
     margin-top: 1em;
     padding-left: 60px;
+    display: flex;
 }
 
-#tabs {
+#tabs-left,
+#tabs-right {
     padding: 0px;
     margin: 0px;
     display: flex;
 }
 
-.nav-item:first-child {
+#tabs-left {
     margin-right: 185px;
 }
-.nav-item:not(:first-child) {
+
+#tabs-right  {
     font-size: 10px;
 }
 

@@ -67,14 +67,22 @@ function refreshPage() {
     document.getElementById("maxDepth").disabled = isDisabled;
     document.getElementById("crawUrl").disabled = isDisabled;
     document.getElementById("resetButton").disabled = isDisabled;
-            
-    document.getElementById("tabs").innerHTML = bgPage.tabs.map(function(tab) {
-        var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
-        var innerTxt = tab + " ("+ count +")";
-        var isActive = tab == currentTab;
-        var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
-        return `<li class="nav-item ${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
-    }).join('');
+
+    var leftTabs = bgPage.tabs.slice(0, 1);
+    var rightTabs = bgPage.tabs.slice(1);
+
+    function tabhtml(tabs) {
+        return tabs.map(function(tab) {
+            var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
+            var innerTxt = tab + " ("+ count +")";
+            var isActive = tab == currentTab;
+            var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
+            return `<li class="nav-item ${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
+        }).join('');
+    }
+
+    document.getElementById("tabs-left").innerHTML = tabhtml(leftTabs);
+    document.getElementById("tabs-right").innerHTML = tabhtml(rightTabs);
     
     document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
