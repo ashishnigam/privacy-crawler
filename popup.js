@@ -126,6 +126,65 @@ function reportStyle() {
         </style>`;
 }
 
+function reportContent(generated, cookies, symbols) {
+    return `
+        <h1>Privacy Report</h1>
+
+        <p>Generated: ${ generated }</p>
+
+        <h2>Cookies (${ cookies.length })</h2>
+
+        ${ cookies.length == 0 ? `
+            <p>No cookies found</p>` : `
+            <table>
+            <thead>
+                <tr>
+                    <th>domain</th>
+                    <th>path</th>
+                    <th>name</th>
+                    <th>expiry</th>
+                    <th>first seen</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${ cookies.map((cookie) => `
+                <tr>
+                    <td>${ cookie['domain'] }</td>
+                    <td>${ cookie['path'] }</td>
+                    <td>${ cookie['name'] }</td>
+                    <td>${ cookie['expirationDate'] }</td>
+                    <td>${ cookie['firstSeen'] }</td>
+                </tr>
+            `).join('') }
+            </tbody>
+            </table>
+        ` }
+        <h2>Fingerprinting (${ symbols.length })</h2>
+
+        ${ symbols.length == 0 ? `
+            <p>No data accessed that can be used to fingerprint</p>` : `
+            <table>
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>first seen at script</th>
+                    <th>first seen at page</th>
+                </tr>
+            </thead>
+            <tbody>
+            ${ symbols.map((symbol) => `
+                <tr>
+                    <td>${ symbol['name'] }</td>
+                    <td>${ symbol['scriptUrl'] }</td>
+                    <td>${ symbol['firstSeen'] }</td>
+                </tr>
+                `).join('')
+            }
+            </tbody>
+            </table>
+        ` }`  
+}
+
 function report(generated, cookies, symbols, extraScript) {
     return `<!doctype html>
         <html lang="en">
@@ -136,54 +195,6 @@ function report(generated, cookies, symbols, extraScript) {
           ${ extraScript }
         </head>
         <body>
-          <h1>Privacy Report</h1>
-
-          <p>Generated: ${ generated }</p>
-
-          <h2>Cookies (${ cookies.length })</h2>
-
-          ${ cookies.length == 0 ? '<p>No cookies found</p>' : `
-              <table>
-                <thead>
-                  <th>domain</th>
-                  <th>path</th>
-                  <th>name</th>
-                  <th>expiry</th>
-                  <th>first seen</th>
-                </thead>
-                <tbody>
-                ${ cookies.map((cookie) => `
-                  <tr>
-                    <td>${ cookie['domain'] }</td>
-                    <td>${ cookie['path'] }</td>
-                    <td>${ cookie['name'] }</td>
-                    <td>${ cookie['expirationDate'] }</td>
-                    <td>${ cookie['firstSeen'] }</td>
-                  </tr>
-                `).join('') }
-                </tbody>
-            </table>
-          ` }
-
-            <h2>Fingerprinting (${ symbols.length })</h2>
-
-            ${ symbols.length == 0 ? '<p>No data accessed that can be used to fingerprint</p>' : `
-                <table>
-                <thead>
-                    <th>name</th>
-                    <th>first seen at script</th>
-                    <th>first seen at page</th>
-                </thead>
-                <tbody>
-                ${ symbols.map((symbol) => `
-                    <tr>
-                        <td>${ symbol['name'] }</td>
-                        <td>${ symbol['scriptUrl'] }</td>
-                        <td>${ symbol['firstSeen'] }</td>
-                    </tr>
-                `).join('') }
-                </tbody>
-                </table>
-            ` }
+        ${ reportContent(generated, cookies, symbols) }
         </body>`;
 } 
