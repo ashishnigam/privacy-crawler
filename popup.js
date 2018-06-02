@@ -60,7 +60,7 @@ function refreshPage() {
                           bgPage.appState == "paused"  ? "Resume"     :
                           bgPage.appState == "stopped" ? "Crawl"      :
                                                          "Pause";
-    document.getElementById("crawlButton").value = crawlButtonText;
+    document.getElementById("crawlButton").innerText = crawlButtonText;
     var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
     
