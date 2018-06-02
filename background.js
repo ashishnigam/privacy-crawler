@@ -155,7 +155,8 @@ async function getNewCookies(page) {
             path: cookie.path,
             name: cookie.name,
             expirationDate: expires,
-            firstSeen: page.url
+            firstSeen: page.url,
+            firstValue: cookie.value
         };
     });
 }

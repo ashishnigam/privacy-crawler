@@ -152,6 +152,7 @@ function reportContent(generated, cookies, symbols) {
                         <th>name</th>
                         <th>expiry</th>
                         <th>first seen</th>
+                        <th>first value</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -162,6 +163,7 @@ function reportContent(generated, cookies, symbols) {
                         <td>${ cookie['name'] }</td>
                         <td>${ cookie['expirationDate'] }</td>
                         <td>${ cookie['firstSeen'] }</td>
+                        <td>${ cookie['firstValue'] }</td>
                     </tr>
                 `).join('') }
                 </tbody>
