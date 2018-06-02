@@ -7,8 +7,8 @@ var allSymbols = [];
 var startingPages = [];
 var appState = "stopped";
 
-// There are multiple content scripts, so we need a bit of state
-// to accumulate them
+// There are multiple content scripts, i.e. from iframes
+// so we need a bit of state to accumulate them
 var latestLinks = [];
 var latestSymbols = [];
 var messagesReceived = null;
