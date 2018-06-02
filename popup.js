@@ -69,7 +69,7 @@ function refreshPage() {
     document.getElementById("resetButton").disabled = isDisabled;
             
     document.getElementById("tabs").innerHTML = bgPage.tabs.map(function(tab) {
-        var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
+        var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
         var innerTxt = tab + " ("+ count +")";
         var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
         return "<li>" + liTxt + "</li>";
@@ -80,7 +80,7 @@ function refreshPage() {
     }).join('');
 
 
-    document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
+    document.getElementById("allCookies").innerHTML = currentTab == 'Report' ? (() => {
         var now = new Date();
         return `<div><button class="download-report">Download report</button></div>
                 <iframe src="${ reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, inPageReportStyle())}"></iframe>`;
