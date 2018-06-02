@@ -43,7 +43,7 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
 
-#tabsContainer {
+nav {
     font-size:99%;
     padding:3px 0 2px 5px;
     font-weight:bold;
