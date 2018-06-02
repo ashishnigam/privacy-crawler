@@ -256,3 +256,24 @@ function reset() {
     allSymbols = [];
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
+
+// There doesn't seem to be a nicer way to get Chrome to consistently use
+// a different icon in incognito. Might have to try to have the same icon
+// that looks ok in both
+function setLightIcon(tabId) {
+    chrome.browserAction.setIcon({path: 'images/paws_light.png', tabId: tabId});
+}
+
+if (chrome.extension.inIncognitoContext) {
+    (async function setIcon() {
+        var tabs = await tabQuery({active: true, currentWindow: true});
+        setLightIcon(tabs[0].id);
+    })();
+
+    chrome.tabs.onCreated.addListener((tab) => {
+        setLightIcon(tab.id);
+    });
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        setLightIcon(tab.id);
+    });
+}

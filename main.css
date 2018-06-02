@@ -46,7 +46,6 @@ header {
 nav {
     font-size: 99%;
     margin-top: 1em;
-    padding-left: 60px;
     display: flex;
     align-items: center;
 }
@@ -97,17 +96,17 @@ a.open-tab-button {
 }
 
 #crawlURLAndButton {
-    padding-left:65px;
+    padding-left: 35px;
     padding-top: 5px;
 }
 
 #icon {
-     position:absolute;
-     top: 0px; 
-     left: 0x; 
-     z-index: 10;
-     width: 58px;
-     height: 58px;
+    position:absolute;
+    top: 11px; 
+    left: 9px; 
+    z-index: 10;
+    width: 25px;
+    height: 25px;
 }
 
 #urlsBeingSearched li:nth-child(even) {
