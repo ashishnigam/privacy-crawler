@@ -55,19 +55,24 @@ nav {
     display: flex;
 }
 
-#tabs li {
+#tabs li,
+#tabs a {
+    display: block;
     list-style-type: none;
-    margin-right: 10px;
-
-    border-bottom: 3px solid #000000;
 }
 
 .open-tab-button {
-    display: block;
+    
     text-decoration: none;
+    padding: 5px;
+}
 
+li.open-tab-button {
+    border-bottom: 3px solid #000000;
+}
+
+a.open-tab-button {
     border-bottom: 3px solid #f2f2f2;
-    margin-bottom: -3px;
 }
 
 #urlsBeingSearched

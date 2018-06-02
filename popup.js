@@ -72,8 +72,9 @@ function refreshPage() {
     document.getElementById("tabs").innerHTML = bgPage.tabs.map(function(tab) {
         var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
         var innerTxt = tab + " ("+ count +")";
-        var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
-        return "<li>" + liTxt + "</li>";
+        var isActive = tab == currentTab;
+        var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
+        return `<li class="${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
     }).join('');
     
     document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
