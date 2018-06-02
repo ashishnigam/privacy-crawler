@@ -44,22 +44,22 @@ header {
 }
 
 nav {
-    font-size:99%;
-    padding:3px 0 2px 5px;
+    font-size: 99%;
     font-weight:bold;
     margin-top: 1em;
-    text-align:center;
 }
 
 #tabs {
     padding: 0px;
-    margin:0px;
+    margin: 0px;
+    display: flex;
+    justify-content: center;
 }
 
 #tabs li {
-    display: inline;
     list-style-type: none;
     padding-right: 10px;
+    padding-bottom: 2px;
 }
 
 #urlsBeingSearched
