@@ -46,7 +46,7 @@ header {
 nav {
     font-size: 99%;
     margin-top: 1em;
-    padding-left: 67px;
+    padding-left: 60px;
 }
 
 #tabs {
@@ -55,14 +55,20 @@ nav {
     display: flex;
 }
 
-#tabs li,
-#tabs a {
+.nav-item:first-child {
+    margin-right: 185px;
+}
+.nav-item:not(:first-child) {
+    font-size: 10px;
+}
+
+.nav-item,
+.open-tab-button {
     display: block;
     list-style-type: none;
 }
 
 .open-tab-button {
-    
     text-decoration: none;
     padding: 5px;
 }

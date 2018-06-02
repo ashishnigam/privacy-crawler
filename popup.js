@@ -74,7 +74,7 @@ function refreshPage() {
         var innerTxt = tab + " ("+ count +")";
         var isActive = tab == currentTab;
         var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
-        return `<li class="${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
+        return `<li class="nav-item ${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
     }).join('');
     
     document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
