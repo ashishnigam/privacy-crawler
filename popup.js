@@ -37,10 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     delegate(document.body, 'click', '.download-report', (e) => {
-        var now = new Date();
-        var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
+        var filename = 'privacy-report-' + dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols),
+            url: reportDataUri(bgPage.latestUpdate, bgPage.allCookies, bgPage.allSymbols),
             filename: filename
         });
     });
@@ -88,8 +87,7 @@ function refreshPage() {
 
         var reportOuterRoot = document.createElement('div');
         reportOuterRoot.setAttribute('id', 'report-outer-root');
-        var now = new Date();
-        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(now, bgPage.allCookies, bgPage.allSymbols);
+        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(bgPage.latestUpdate, bgPage.allCookies, bgPage.allSymbols);
 
         var fragment = document.createDocumentFragment();
         fragment.appendChild(buttonWrapper);
@@ -98,8 +96,8 @@ function refreshPage() {
     })() : document.createDocumentFragment());
 }
 
-function reportDataUri(now, cookies, symbols) {
-    var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
+function reportDataUri(generatedDate, cookies, symbols) {
+    var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
     var html = report(generated, cookies, symbols);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
 }

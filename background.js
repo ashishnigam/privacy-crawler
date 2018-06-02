@@ -5,6 +5,7 @@ var allCookies = [];
 var allSymbolsSeen = {};
 var allSymbols = [];
 var startingPages = [];
+var latestUpdate = new Date();
 var appState = "stopped";
 
 // There are multiple content scripts, i.e. from iframes
@@ -215,6 +216,8 @@ async function crawlMore() {
             allSymbolsSeen[symbol.name] = true;
             allSymbols.push(symbol);
         });
+
+        latestUpdate = new Date();
     }
 
     // We are either finished, or we have paused
