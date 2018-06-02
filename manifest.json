@@ -14,7 +14,7 @@
       "run_at": "document_start",
       "all_frames": true
    }],
-   "description": "Crawls a site to find all cookies",
+   "description": "Crawls a website for cookies and fingerprinting",
    "icons": {
       "16": "images/icon48.png",
       "19": "images/icon19.png",
@@ -25,7 +25,7 @@
       "96": "images/icon96.png",
       "128": "images/icon128.png"
    },
-   "name": "Cookie Crawler",
+   "name": "Privacy Crawler",
    "permissions": [
       "activeTab",
       "clipboardWrite",
@@ -36,5 +36,5 @@
       "https://*/*"
    ],   
    "incognito": "split",
-   "version": "0.6"
+   "version": "0.1"
 }
