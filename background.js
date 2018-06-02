@@ -1,4 +1,4 @@
-var tabs = ["Queued","Crawling","Crawled","Errors","Report"];
+var tabs = ["Report","Queued","Crawling","Crawled","Errors"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];

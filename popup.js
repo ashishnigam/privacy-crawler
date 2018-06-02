@@ -1,4 +1,4 @@
-var currentTab = "Queued";
+var currentTab = "Report";
 var bgPage = chrome.extension.getBackgroundPage();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
