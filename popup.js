@@ -1,4 +1,4 @@
-var currentTab = "Queued";
+var currentTab = "Report";
 var bgPage = chrome.extension.getBackgroundPage();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -37,10 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     delegate(document.body, 'click', '.download-report', (e) => {
-        var now = new Date();
-        var filename = 'privacy-report-' + dateFns.format(now, 'YYYY-MM-DD-HH-mm-ss') + '.html';
+        var filename = 'privacy-report-' + dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD-HH-mm-ss') + '.html';
         chrome.downloads.download({
-            url: reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, downloadReportStyle()),
+            url: reportDataUri(bgPage.latestUpdate, bgPage.allCookies, bgPage.allSymbols),
             filename: filename
         });
     });
@@ -56,118 +55,131 @@ async function onLoad() {
 }
 
 function refreshPage() {
-    var crawlButtonText = bgPage.appState == "paused"  ? "Resume" :
-                          bgPage.appState == "stopped" ? "Crawl"  :
+    var crawlButtonText = bgPage.appState == "pausing" ? "Pausing..." :
+                          bgPage.appState == "paused"  ? "Resume"     :
+                          bgPage.appState == "stopped" ? "Crawl"      :
                                                          "Pause";
-    document.getElementById("crawlButton").value = crawlButtonText;
-    var isDisabledCrawl = bgPage.appState == "paused" && bgPage.getURLsInTab("Crawling").length > 0;
+    document.getElementById("crawlButton").innerText = crawlButtonText;
+    var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
     
     var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
     document.getElementById("maxDepth").disabled = isDisabled;
     document.getElementById("crawUrl").disabled = isDisabled;
     document.getElementById("resetButton").disabled = isDisabled;
-            
-    document.getElementById("tabs").innerHTML = bgPage.tabs.map(function(tab) {
-        var count = tab == 'Cookies' ? bgPage.allCookies.length : bgPage.getURLsInTab(tab).length;
-        var innerTxt = tab + " ("+ count +")";
-        var liTxt = tab == currentTab ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
-        return "<li>" + liTxt + "</li>";
-    }).join('');
+
+    var leftTabs = bgPage.tabs.slice(0, 1);
+    var rightTabs = bgPage.tabs.slice(1);
+
+    function tabhtml(tabs) {
+        return tabs.map(function(tab) {
+            var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
+            var innerTxt = tab + " ("+ count +")";
+            var isActive = tab == currentTab;
+            var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
+            return `<li class="nav-item ${ !isActive ? '' : 'open-tab-button'}">${ liTxt }</li>`;
+        }).join('');
+    }
+
+    document.getElementById("tabs-left").innerHTML = tabhtml(leftTabs);
+    document.getElementById("tabs-right").innerHTML = tabhtml(rightTabs);
     
     document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
     }).join('');
 
+    document.getElementById("allCookies").innerHTML = '';
+    document.getElementById("allCookies").appendChild(currentTab == 'Report' ? (() => {
+        var reportOuterRoot = document.createElement('div');
+        reportOuterRoot.setAttribute('id', 'report-outer-root');
+        var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
+        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(generated, bgPage.allCookies, bgPage.allSymbols);
 
-    document.getElementById("allCookies").innerHTML = currentTab == 'Cookies' ? (() => {
-        var now = new Date();
-        return `<div><button class="download-report">Download report</button></div>
-                <iframe src="${ reportDataUri(now, bgPage.allCookies, bgPage.allSymbols, inPageReportStyle())}"></iframe>`;
-    })() : '';
+        var fragment = document.createDocumentFragment();
+        fragment.appendChild(reportOuterRoot);
+        return fragment;
+    })() : document.createDocumentFragment());
 }
 
-function reportDataUri(now, cookies, symbols, extraScript) {
-    var generated = dateFns.format(now, 'YYYY-MM-DD HH:mm:ss');
-    var html = report(generated, cookies, symbols, extraScript);
+function reportDataUri(generated, cookies, symbols) {
+    var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
+    var html = report(generated, cookies, symbols);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
 }
 
-function inPageReportStyle() {
-    return `<style>body {padding: 0}></style>`;
+function reportStyle() {
+    return `
+        <style>
+        .report-root {
+          font-family: monospace;
+          color: #000000;
+          font: normal normal normal 13px/normal monospace;
+        }
+        table {
+          border-collapse: collapse;
+        }
+        th {
+          text-align: left;
+        }
+        td,
+        th {
+          white-space: nowrap;
+          padding: 3px 5px;
+        }
+        tr:nth-child(even) > td {
+          background: #f3f3f3;
+          -webkit-print-color-adjust: exact;
+        }
+        </style>`;
 }
 
-function downloadReportStyle() {
-    return `<style>body {padding: 8px}></style>`;
-}
+function reportContent(generated, cookies, symbols) {
+    return `
+        <div class="report-root">
+            <h1>Privacy Report</h1>
 
-function report(generated, cookies, symbols, extraScript) {
-    return `<!doctype html>
-        <html lang="en">
-        <head>
-          <meta charset="utf-8">
-          <title>Privacy Report</title>
-          <style>
-            body {
-              margin: 0;
-              font-family: monospace;
-            }
-            table {
-              border-collapse: collapse;
-            }
-            th {
-              text-align: left;
-            }
-            td,
-            th {
-              white-space: nowrap;
-              padding: 3px 5px;
-            }
-            tr:nth-child(even) > td {
-              background: #f3f3f3;
-              -webkit-print-color-adjust: exact;
-            }
-          </style>
-          ${ extraScript }
-        </head>
-        <body>
-          <h1>Privacy Report</h1>
+            <p>Generated: ${ generated }<br>Root: ${ settings.root }<br>Depth: ${ settings.maxDepth }</p>
 
-          <p>Generated: ${ generated }</p>
+            <h2>Cookies (${ cookies.length })</h2>
 
-          <h2>Cookies (${ cookies.length })</h2>
-
-          ${ cookies.length == 0 ? '<p>No cookies found</p>' : `
-              <table>
+            ${ cookies.length == 0 ? `
+                <p>No cookies found</p>` : `
+                <table>
                 <thead>
-                  <th>domain</th>
-                  <th>path</th>
-                  <th>name</th>
-                  <th>expiry</th>
-                  <th>first seen</th>
+                    <tr>
+                        <th>domain</th>
+                        <th>path</th>
+                        <th>name</th>
+                        <th>expiry</th>
+                        <th>first seen</th>
+                        <th>first value</th>
+                    </tr>
                 </thead>
                 <tbody>
                 ${ cookies.map((cookie) => `
-                  <tr>
-                    <td>${ cookie['domain'] }</td>
-                    <td>${ cookie['path'] }</td>
-                    <td>${ cookie['name'] }</td>
-                    <td>${ cookie['expirationDate'] }</td>
-                    <td>${ cookie['firstSeen'] }</td>
-                  </tr>
+                    <tr>
+                        <td>${ cookie['domain'] }</td>
+                        <td>${ cookie['path'] }</td>
+                        <td>${ cookie['name'] }</td>
+                        <td>${ cookie['expirationDate'] }</td>
+                        <td>${ cookie['firstSeen'] }</td>
+                        <td>${ cookie['firstValue'] }</td>
+                    </tr>
                 `).join('') }
                 </tbody>
-            </table>
-          ` }
-
+                </table>
+            ` }
             <h2>Fingerprinting (${ symbols.length })</h2>
 
-            ${ symbols.length == 0 ? '<p>No data accessed that can be used to fingerprint</p>' : `
+            ${ symbols.length == 0 ? `
+                <p>No data accessed that can be used to fingerprint</p>` : `
                 <table>
                 <thead>
-                    <th>name</th>
-                    <th>first seen at script</th>
-                    <th>first seen at page</th>
+                    <tr>
+                        <th>name</th>
+                        <th>first seen at script</th>
+                        <th>first seen at page</th>
+                    </tr>
                 </thead>
                 <tbody>
                 ${ symbols.map((symbol) => `
@@ -176,9 +188,23 @@ function report(generated, cookies, symbols, extraScript) {
                         <td>${ symbol['scriptUrl'] }</td>
                         <td>${ symbol['firstSeen'] }</td>
                     </tr>
-                `).join('') }
+                    `).join('')
+                }
                 </tbody>
                 </table>
             ` }
+        </div>`;
+}
+
+function report(generated, cookies, symbols) {
+    return `<!doctype html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <title>Privacy Report</title>
+          ${ reportStyle() }
+        </head>
+        <body>
+        ${ reportContent(generated, cookies, symbols) }
         </body>`;
 } 

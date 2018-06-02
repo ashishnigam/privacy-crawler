@@ -1,42 +1,90 @@
-@charset "utf-8";
-/* CSS Document */
-
-body 
-{
+body {
     color: #1E1E1E;
     font: normal normal normal 0.75em/1.73em Verdana, Arial, Geneva, Helvetica, sans-serif;
     overflow-x: hidden;
-}
-
-#content
-{
+    margin: 0;
+    padding: 8px;
     width: 600px;
-    height: 400px;
 }
 
-#tabsContainer
-{
-    background:#ebeff9;
-    border-top:1px solid #b5c7de;
-    font-size:99%;
-    padding:3px 0 2px 5px;
-    font-weight:bold;
-    margin-bottom:1em;
-    margin-top:1em;
-    text-align:center;
+input[type="text"],
+button {
+    padding: 4px 5px;
+    border: 1px solid #dddddd;
 }
 
-#tabs
-{
+button {
+    border-radius: 3px;
+    background: #f5f5f5;
+}
+
+button:not([disabled]) {
+    cursor: pointer;
+}
+
+button:hover:not([disabled]) {
+    background: #efefef;
+}
+
+button:focus:not([disabled]) {
+    background: #e2e2e2;
+    outline: none;
+}
+
+button:active:not([disabled]) {
+    background: #d2d2d2;
+    outline: none;
+}
+
+header {
+    background: #f2f2f2;
+    margin: -8px -8px 0 -8px;
+    padding: 8px 8px 0 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+nav {
+    font-size: 99%;
+    margin-top: 1em;
+    padding-left: 60px;
+    display: flex;
+    align-items: center;
+}
+
+#tabs-left,
+#tabs-right {
     padding: 0px;
-    margin:0px;
+    margin: 0px;
+    display: flex;
 }
 
-#tabs li
-{
-    display: inline;
+#tabs-left {
+    margin-right: 10px;
+}
+
+#tabs-right  {
+    font-size: 10px;
+    margin-left: auto;
+}
+
+.nav-item,
+.open-tab-button {
+    display: block;
     list-style-type: none;
-    padding-right: 10px;
+}
+
+.open-tab-button {
+    text-decoration: none;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+li.open-tab-button {
+    border-bottom: 3px solid #000000;
+}
+
+a.open-tab-button {
+    border-bottom: 3px solid #f2f2f2;
 }
 
 #urlsBeingSearched
@@ -44,19 +92,16 @@ body
     padding: 0px;
 }
 
-#urlsBeingSearched li
-{
+#urlsBeingSearched li {
     list-style-type: none;
 }
 
-#crawlURLAndButton
-{
+#crawlURLAndButton {
     padding-left:65px;
     padding-top: 5px;
 }
 
-#icon
-{   
+#icon {
      position:absolute;
      top: 0px; 
      left: 0x; 
@@ -69,8 +114,6 @@ body
     background-color: #f8f8f8
 }
 
-iframe {
-    border: none;
-    height: 305px;
-    width:  600px;
+#report-outer-root {
+    overflow-x: scroll;
 }

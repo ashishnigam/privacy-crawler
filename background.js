@@ -1,14 +1,15 @@
-var tabs = ["Queued","Crawling","Crawled","Errors","Cookies"];
+var tabs = ["Report","Queued","Crawling","Crawled","Errors"];
 var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
 var allSymbolsSeen = {};
 var allSymbols = [];
 var startingPages = [];
+var latestUpdate = new Date();
 var appState = "stopped";
 
-// There are multiple content scripts, so we need a bit of state
-// to accumulate them
+// There are multiple content scripts, i.e. from iframes
+// so we need a bit of state to accumulate them
 var latestLinks = [];
 var latestSymbols = [];
 var messagesReceived = null;
@@ -154,7 +155,8 @@ async function getNewCookies(page) {
             path: cookie.path,
             name: cookie.name,
             expirationDate: expires,
-            firstSeen: page.url
+            firstSeen: page.url,
+            firstValue: cookie.value
         };
     });
 }
@@ -215,10 +217,12 @@ async function crawlMore() {
             allSymbolsSeen[symbol.name] = true;
             allSymbols.push(symbol);
         });
+
+        latestUpdate = new Date();
     }
 
     // We are either finished, or we have paused
-    appState = (appState == "paused" && getURLsInTab("Queued").length) ? "paused" : "stopped";
+    appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
@@ -232,7 +236,7 @@ function getURLsInTab(tab) {
 }
 
 function pause() {
-    appState = "paused";
+    appState = "pausing";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
