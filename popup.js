@@ -87,7 +87,8 @@ function refreshPage() {
 
         var reportOuterRoot = document.createElement('div');
         reportOuterRoot.setAttribute('id', 'report-outer-root');
-        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(bgPage.latestUpdate, bgPage.allCookies, bgPage.allSymbols);
+        var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
+        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(generated, bgPage.allCookies, bgPage.allSymbols);
 
         var fragment = document.createDocumentFragment();
         fragment.appendChild(buttonWrapper);
@@ -96,7 +97,7 @@ function refreshPage() {
     })() : document.createDocumentFragment());
 }
 
-function reportDataUri(generatedDate, cookies, symbols) {
+function reportDataUri(generated, cookies, symbols) {
     var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
     var html = report(generated, cookies, symbols);
     return 'data:text/html;charset=UTF-8,' + encodeURIComponent(html);
