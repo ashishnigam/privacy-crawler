@@ -8,18 +8,20 @@
     <script src="popup.js"></script>
 </head>
 <body>
-    <img src="images/icon128.png" id="icon" width="128" height="128">
+    <header>
+        <img src="images/icon128.png" id="icon" width="128" height="128">
 
-    <div id="crawlURLAndButton">
-        Depth: <input id="maxDepth" type="text" size="3">
-        Root: <input id="crawUrl" type="text" size="44">
-        <button id="crawlButton">Crawl</button>
-        <button id="resetButton">Reset</button>
-    </div>
+        <div id="crawlURLAndButton">
+            Depth: <input id="maxDepth" type="text" size="3">
+            Root: <input id="crawUrl" type="text" size="44">
+            <button id="crawlButton">Crawl</button>
+            <button id="resetButton">Reset</button>
+        </div>
 
-    <div id="tabsContainer">
-        <ul id="tabs"></ul>
-    </div>
+        <div id="tabsContainer">
+            <ul id="tabs"></ul>
+        </div>
+    </header>
 
     <ul id="urlsBeingSearched"></ul>
 
