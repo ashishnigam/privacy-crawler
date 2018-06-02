@@ -2,6 +2,8 @@ body {
     color: #1E1E1E;
     font: normal normal normal 0.75em/1.73em Verdana, Arial, Geneva, Helvetica, sans-serif;
     overflow-x: hidden;
+    margin: 0;
+    padding: 8px;
 }
 
 #content {
@@ -10,13 +12,11 @@ body {
 }
 
 #tabsContainer {
-    background:#ebeff9;
-    border-top:1px solid #b5c7de;
+    background: #efefef;
     font-size:99%;
     padding:3px 0 2px 5px;
     font-weight:bold;
-    margin-bottom:1em;
-    margin-top:1em;
+    margin: 1em -8px;
     text-align:center;
 }
 
