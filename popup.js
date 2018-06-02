@@ -80,14 +80,21 @@ function refreshPage() {
         return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
     }).join('');
 
-    document.getElementById("allCookies").innerHTML = currentTab == 'Report' ? (() => {
-        return `
-            <div><button class="download-report">Download report</button></div>
-            <div id="report-outer-root"></div>
-        `;
-    })() : '';
-    var now = new Date();
-    document.getElementById("report-outer-root").attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(now, bgPage.allCookies, bgPage.allSymbols);
+    document.getElementById("allCookies").innerHTML = '';
+    document.getElementById("allCookies").appendChild(currentTab == 'Report' ? (() => {
+        var buttonWrapper = document.createElement('div');
+        buttonWrapper.innerHTML = `<button class="download-report">Download report</button>`;
+
+        var reportOuterRoot = document.createElement('div');
+        reportOuterRoot.setAttribute('id', 'report-outer-root');
+        var now = new Date();
+        reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(now, bgPage.allCookies, bgPage.allSymbols);
+
+        var fragment = document.createDocumentFragment();
+        fragment.appendChild(buttonWrapper);
+        fragment.appendChild(reportOuterRoot);
+        return fragment;
+    })() : document.createDocumentFragment());
 }
 
 function reportDataUri(now, cookies, symbols) {
