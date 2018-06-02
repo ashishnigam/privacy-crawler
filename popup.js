@@ -101,33 +101,38 @@ function downloadReportStyle() {
     return `<style>body {padding: 8px}></style>`;
 }
 
+function reportStyle() {
+    return `
+        <style>
+        body {
+          margin: 0;
+          font-family: monospace;
+        }
+        table {
+          border-collapse: collapse;
+        }
+        th {
+          text-align: left;
+        }
+        td,
+        th {
+          white-space: nowrap;
+          padding: 3px 5px;
+        }
+        tr:nth-child(even) > td {
+          background: #f3f3f3;
+          -webkit-print-color-adjust: exact;
+        }
+        </style>`;
+}
+
 function report(generated, cookies, symbols, extraScript) {
     return `<!doctype html>
         <html lang="en">
         <head>
           <meta charset="utf-8">
           <title>Privacy Report</title>
-          <style>
-            body {
-              margin: 0;
-              font-family: monospace;
-            }
-            table {
-              border-collapse: collapse;
-            }
-            th {
-              text-align: left;
-            }
-            td,
-            th {
-              white-space: nowrap;
-              padding: 3px 5px;
-            }
-            tr:nth-child(even) > td {
-              background: #f3f3f3;
-              -webkit-print-color-adjust: exact;
-            }
-          </style>
+          ${ reportStyle() }
           ${ extraScript }
         </head>
         <body>
