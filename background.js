@@ -218,7 +218,7 @@ async function crawlMore() {
     }
 
     // We are either finished, or we have paused
-    appState = (appState == "paused" && getURLsInTab("Queued").length) ? "paused" : "stopped";
+    appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 
@@ -232,7 +232,7 @@ function getURLsInTab(tab) {
 }
 
 function pause() {
-    appState = "paused";
+    appState = "pausing";
     chrome.runtime.sendMessage({message: "refresh_page"});
 }
 

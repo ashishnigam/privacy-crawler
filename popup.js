@@ -56,11 +56,12 @@ async function onLoad() {
 }
 
 function refreshPage() {
-    var crawlButtonText = bgPage.appState == "paused"  ? "Resume" :
-                          bgPage.appState == "stopped" ? "Crawl"  :
+    var crawlButtonText = bgPage.appState == "pausing" ? "Pausing..." :
+                          bgPage.appState == "paused"  ? "Resume"     :
+                          bgPage.appState == "stopped" ? "Crawl"      :
                                                          "Pause";
     document.getElementById("crawlButton").value = crawlButtonText;
-    var isDisabledCrawl = bgPage.appState == "paused" && bgPage.getURLsInTab("Crawling").length > 0;
+    var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
     
     var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
