@@ -1,28 +1,3 @@
-function timeout(ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, ms);
-    });
-}
-
-var port = chrome.runtime.connect();
-
-var loaded = new Promise((resolve, reject) => {
-    window.addEventListener('load', () => {
-        resolve();
-    });
-});
-
-loaded.then(() => {
-    return timeout(1000);
-}).then(() => {
-    var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
-        return a.href;
-    });
-    port.postMessage({links: links, symbols_accessed: symbols_accessed});
-});
-
 var event_id = Math.random();
 
 // Setting the text of the script rather than using src,
@@ -52,4 +27,29 @@ document.addEventListener(event_id, (e) => {
             });
         }
     });
+});
+
+function timeout(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve();
+        }, ms);
+    });
+}
+
+var port = chrome.runtime.connect();
+
+var loaded = new Promise((resolve, reject) => {
+    window.addEventListener('load', () => {
+        resolve();
+    });
+});
+
+loaded.then(() => {
+    return timeout(1000);
+}).then(() => {
+    var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
+        return a.href;
+    });
+    port.postMessage({links: links, symbols_accessed: symbols_accessed});
 });
