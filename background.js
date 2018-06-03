@@ -74,24 +74,15 @@ function removeCookie(cookie) {
     });  
 };
 
-// Working around slightly annoying tab update API: you can't
-// remove listeners, and you can't just listen to one tab
-_onTabUpdated = (tabId, info) => {
-    onTabUpdated.forEach((func) => {
-        func(tabId, info);
-    });
-}
-onTabUpdated = []
-chrome.tabs.onUpdated.addListener(_onTabUpdated);
 function onTabStatusComplete(tabId) {
     return new Promise((resolve, reject) => {
-        var newOnTabUpdated = (updatedTabId, info) => {
+        var listener = (updatedTabId, info) => {
             if (updatedTabId == tabId && info.status == 'complete') {
                 resolve();
-                onTabUpdated.splice(newLength - 1, 1);
+                chrome.tabs.onUpdated.removeListener(listener);
             }
         }
-        var newLength = onTabUpdated.push(newOnTabUpdated);
+        chrome.tabs.onUpdated.addListener(listener);
     });
 }
 
