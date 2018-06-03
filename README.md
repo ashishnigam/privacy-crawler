@@ -9,6 +9,14 @@ The extension loads the page specified as the _root_ element, follows links recu
   - what cookies first appeared at what page, together with their domains, expiry times and values;
   - what Javascript is accessed that could be used to fingerprint the browser.
 
+# What links are followed
+
+Only links that start with the _root_ are crawled. However, you can have muliple roots, seperating them with a comma.
+
+For example, if you want to crawl both https://mydomain.com/ and https://subsite.mydomain.com/, you can enter `https://mydomain.com/,https://subsite.mydomain.com/` as the root.
+
+You _must_ include the `http` or `https`. 
+
 # Warnings and recommendations
 
 When starting to crawl, this extension will delete all cookies in the current environment. It is recommended to run crawls in incognito mode to avoid logging you out from sites from non-incognito mode.
