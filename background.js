@@ -180,7 +180,7 @@ async function crawlMore() {
     while (appState == "crawling" && getURLsInTab("Queued").length > 0) {
         var page = getURLsInTab("Queued")[0];
         page.state = "crawling";
-        chrome.runtime.sendMessage({message: "refresh_page"});
+        refreshPage();
 
         var newPages;
         var symbolsAccessed;
@@ -218,7 +218,7 @@ async function crawlMore() {
 
     // We are either finished, or we have paused
     appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function getURLsInTab(tab) {
@@ -232,12 +232,12 @@ function getURLsInTab(tab) {
 
 function pause() {
     appState = "pausing";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function stop() {
     appState = "stopped";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function reset() {
@@ -249,7 +249,17 @@ function reset() {
     allCookies = [];
     allSymbolsSeen = {};
     allSymbols = [];
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
+}
+
+function setBadgeText() {
+    var text = appState == 'crawling' || appState == 'pausing' ? '▶' : '';
+    chrome.browserAction.setBadgeText({tabId: targetTabId, text: text});
+}
+
+function refreshPage() {
+    chrome.runtime.sendMessage({message: "refresh_page", tabId: targetTabId});
+    setBadgeText();
 }
 
 // There doesn't seem to be a nicer way to get Chrome to consistently use
@@ -257,12 +267,14 @@ function reset() {
 // that looks ok in both
 function setLightIcon(tabId) {
     chrome.browserAction.setIcon({path: 'images/paws_light.png', tabId: tabId});
+    setBadgeText();
 }
 
 if (chrome.extension.inIncognitoContext) {
     (async function setIcon() {
         var tabs = await tabQuery({active: true, currentWindow: true});
         setLightIcon(tabs[0].id);
+        setBadgeText();
     })();
 
     chrome.tabs.onCreated.addListener((tab) => {
@@ -270,5 +282,6 @@ if (chrome.extension.inIncognitoContext) {
     });
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
+        setBadgeText();
     });
 }
