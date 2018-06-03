@@ -652,5 +652,5 @@ function instrument() {
     instrumentObject(window.GainNode.prototype, "GainNode");
     instrumentObject(window.ScriptProcessorNode.prototype, "ScriptProcessorNode");
 
-    console.log("Successfully started all instrumentation.");
+    console.debug("Privacy Crawler: Successfully started all instrumentation.");
 }

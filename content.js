@@ -1,28 +1,3 @@
-function timeout(ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, ms);
-    });
-}
-
-var port = chrome.runtime.connect();
-
-var loaded = new Promise((resolve, reject) => {
-    window.addEventListener('load', () => {
-        resolve();
-    });
-});
-
-loaded.then(() => {
-    return timeout(1000);
-}).then(() => {
-    var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
-        return a.href;
-    });
-    port.postMessage({links: links, symbols_accessed: symbols_accessed});
-});
-
 var event_id = Math.random();
 
 // Setting the text of the script rather than using src,
@@ -53,3 +28,45 @@ document.addEventListener(event_id, (e) => {
         }
     });
 });
+
+var loaded = new Promise((resolve, reject) => {
+    window.addEventListener('load', () => {
+        resolve();
+    });
+});
+
+function onMessage(type) {
+    return new Promise((resolve, reject) => {
+        var listener = (message, sender, sendResponse) => {
+            if (message.type == type) {
+                resolve(message);
+                chrome.runtime.onMessage.removeListener(listener);
+            }
+        }
+        chrome.runtime.onMessage.addListener(listener);
+    });
+}
+
+async function sendAnalysisOnNextRequest(type) {
+    console.log('Privacy Crawler: content script waiting for message');
+    var requestPromise = onMessage('get_analysis');
+    await loaded;
+    await timeout(1000);
+    var request = await requestPromise;
+    console.log('Privacy Crawler: content script received message', request);
+
+    var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
+        return a.href;
+    });
+    console.log('Privacy Crawler: content script sending message');
+    chrome.runtime.sendMessage({
+        type: 'get_analysis_response',
+        url: request.url,
+        links: links,
+        symbols_accessed: symbols_accessed
+    });
+
+    symbols_accessed = [];
+    sendAnalysisOnNextRequest();
+}
+sendAnalysisOnNextRequest();

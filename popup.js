@@ -84,21 +84,22 @@ function refreshPage() {
     document.getElementById("tabs-left").innerHTML = tabhtml(leftTabs);
     document.getElementById("tabs-right").innerHTML = tabhtml(rightTabs);
     
-    document.getElementById("urlsBeingSearched").innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
-        return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
-    }).join('');
-
-    document.getElementById("allCookies").innerHTML = '';
-    document.getElementById("allCookies").appendChild(currentTab == 'Report' ? (() => {
+    document.getElementById("tab-content").innerHTML = '';
+    document.getElementById("tab-content").appendChild(currentTab != 'Report' ? (function () {
+        var list = document.createElement('ul');
+        list.setAttribute('id', 'urlsBeingSearched');
+        list.innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
+            return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
+        }).join('');
+        return list;
+    })() : (() => {
         var reportOuterRoot = document.createElement('div');
         reportOuterRoot.setAttribute('id', 'report-outer-root');
         var generated = dateFns.format(bgPage.latestUpdate, 'YYYY-MM-DD HH:mm:ss');
         reportOuterRoot.attachShadow({mode: 'open'}).innerHTML = reportStyle() + reportContent(generated, bgPage.allCookies, bgPage.allSymbols);
 
-        var fragment = document.createDocumentFragment();
-        fragment.appendChild(reportOuterRoot);
-        return fragment;
-    })() : document.createDocumentFragment());
+        return reportOuterRoot;
+    })());
 }
 
 function reportDataUri(generated, cookies, symbols) {

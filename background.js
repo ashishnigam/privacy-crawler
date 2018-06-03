@@ -8,37 +8,42 @@ var startingPages = [];
 var latestUpdate = new Date();
 var appState = "stopped";
 
+var targetTabId = null;
+
+// If the tab isn't complete, or we get no response to messages
+// then we'll fail the page with an error
+var pageLoadTimeout = 10000;
+
 // There are multiple content scripts, i.e. from iframes
 // so we need a bit of state to accumulate them
-var latestLinks = [];
-var latestSymbols = [];
-var messagesReceived = null;
+var _anaylses = {};
 
-chrome.runtime.onConnect.addListener((port) => {
-    port.onMessage.addListener((msg) => {
-        if (appState == 'stopped') return;
-
-        msg.links.forEach((link) => {
-            latestLinks.push(link);
-        });
-        msg.symbols_accessed.forEach((symbol) => {
-            latestSymbols.push(symbol);
-        });
-
-        messagesReceived();
-    });
+// We can't predict how many messages well have: one for each iframe
+// Hopefully it's reasonable to wait 500ms after each message to see
+// if more will appear.
+var _anaylsesDebounceTimeout = 500;
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type != 'get_analysis_response') return;
+    if (!(message.url in _anaylses)) return;
+    var url = message.url;
+    _anaylses[url] = _anaylses[url] || {};
+    _anaylses[url].links = (_anaylses[url].links || []).concat(message.links);
+    _anaylses[url].symbols_accessed = (_anaylses[url].symbols_accessed || []).concat(message.symbols_accessed);
+    _anaylses[url].done(_anaylses[url]);
 });
 
-function clearAnalysis() {
-    latestLinks = [];
-    latestSymbols = [];
-}
+function getAnalysis(tabId, url) {
+    _anaylses[url] = {};
+    sendMessage(tabId, {
+        type: 'get_analysis',
+        url: url
+    });
 
-function waitForAnalysis() {
     return new Promise((resolve, reject) => {
-        messagesReceived = debounce(() => {
-            resolve({links: latestLinks, symbols_accessed: latestSymbols})
-        }, 500);
+        _anaylses[url].done = debounce(() => {
+            resolve(_anaylses[url]);
+            delete _anaylses[url];
+        }, _anaylsesDebounceTimeout);
     });
 }
 
@@ -53,9 +58,13 @@ async function beginCrawl(url, maxDepth) {
     });
     startingPages = urls;
     var allCookies = await getCookies();
-    console.log("Deleting all cookies");
+    console.log("Privacy Crawler: Deleting all cookies");
     await Promise.all(allCookies.map(removeCookie));
-    console.log("All cookies deleted");
+    console.log("Privacy Crawler: All cookies deleted");
+
+    var tabs = await tabQuery({active: true, currentWindow: true});
+    targetTabId = tabs[0].id;
+
     crawlMore();
 }
 
@@ -74,24 +83,15 @@ function removeCookie(cookie) {
     });  
 };
 
-// Working around slightly annoying tab update API: you can't
-// remove listeners, and you can't just listen to one tab
-_onTabUpdated = (tabId, info) => {
-    onTabUpdated.forEach((func) => {
-        func(tabId, info);
-    });
-}
-onTabUpdated = []
-chrome.tabs.onUpdated.addListener(_onTabUpdated);
 function onTabStatusComplete(tabId) {
     return new Promise((resolve, reject) => {
-        var newOnTabUpdated = (updatedTabId, info) => {
+        var listener = (updatedTabId, info) => {
             if (updatedTabId == tabId && info.status == 'complete') {
                 resolve();
-                onTabUpdated.splice(newLength - 1, 1);
+                chrome.tabs.onUpdated.removeListener(listener);
             }
         }
-        var newLength = onTabUpdated.push(newOnTabUpdated);
+        chrome.tabs.onUpdated.addListener(listener);
     });
 }
 
@@ -105,24 +105,18 @@ function cookieKey(cookie) {
     return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
 }
 
-async function crawlPage(page)
-{
-    console.log("Starting Crawl --> "+JSON.stringify(page));
-    clearAnalysis();
-
-    var tabs = await tabQuery({active: true, currentWindow: true});
-    chrome.tabs.update(tabs[0].id, {
+async function crawlPage(page) {
+    chrome.tabs.update(targetTabId, {
         url: page.url
     });
-    await onTabStatusComplete(tabs[0].id);
 
-    var response = await waitForAnalysis();
-    console.log('error',  chrome.runtime.lastError);
-    if (response == null) {
-        throw new Error('No response from page');
-    }
+    await onTabStatusComplete(targetTabId);
 
-    var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
+    // Wait for page (and iframes) to load
+    await timeout(1000);
+
+    var analysis = await getAnalysis(targetTabId, page.url);
+    var newPages = analysis.links.filter(function(linkURL) {
         var anyStartsWith = startingPages.some(function(startingPage) {
             return startsWith(linkURL, startingPage);
         });
@@ -135,8 +129,7 @@ async function crawlPage(page)
         }
     });
 
-    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
-    return [newPages, response.symbols_accessed];
+    return [newPages, analysis.symbols_accessed];
 }
 
 async function getNewCookies(page) {
@@ -187,24 +180,26 @@ async function crawlMore() {
     while (appState == "crawling" && getURLsInTab("Queued").length > 0) {
         var page = getURLsInTab("Queued")[0];
         page.state = "crawling";
-        chrome.runtime.sendMessage({message: "refresh_page"});
+        refreshPage();
 
         var newPages;
         var symbolsAccessed;
         try {
-            [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
+            console.log("Privacy Crawler: Crawling " + page.url);
+            [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(pageLoadTimeout)]);
+            console.log("Privacy Crawler: Crawled " + page.url);
         } catch(e) {
+            console.error("Privacy Crawler: Error crawling " + page.url, e);
             page.state = "error";
+            newPages = [];
             symbolsAccessed = [];
         } finally {
             page.state = page.state != "error" ? "crawled" : page.state;
         }
 
-        if (page.state != "error") {
-            newPages.forEach(function(page) {
-                allPages[page.url] = page;
-            });
-        }
+        newPages.forEach(function(page) {
+            allPages[page.url] = page;
+        });
 
         // Even in the case of error, cookies, might have changed
         var newCookies = await getNewCookies(page);
@@ -223,7 +218,7 @@ async function crawlMore() {
 
     // We are either finished, or we have paused
     appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function getURLsInTab(tab) {
@@ -237,12 +232,12 @@ function getURLsInTab(tab) {
 
 function pause() {
     appState = "pausing";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function stop() {
     appState = "stopped";
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
 }
 
 function reset() {
@@ -254,7 +249,17 @@ function reset() {
     allCookies = [];
     allSymbolsSeen = {};
     allSymbols = [];
-    chrome.runtime.sendMessage({message: "refresh_page"});
+    refreshPage();
+}
+
+function setBadgeText() {
+    var text = appState == 'crawling' || appState == 'pausing' ? '▶' : '';
+    chrome.browserAction.setBadgeText({tabId: targetTabId, text: text});
+}
+
+function refreshPage() {
+    chrome.runtime.sendMessage({message: "refresh_page", tabId: targetTabId});
+    setBadgeText();
 }
 
 // There doesn't seem to be a nicer way to get Chrome to consistently use
@@ -262,12 +267,14 @@ function reset() {
 // that looks ok in both
 function setLightIcon(tabId) {
     chrome.browserAction.setIcon({path: 'images/paws_light.png', tabId: tabId});
+    setBadgeText();
 }
 
 if (chrome.extension.inIncognitoContext) {
     (async function setIcon() {
         var tabs = await tabQuery({active: true, currentWindow: true});
         setLightIcon(tabs[0].id);
+        setBadgeText();
     })();
 
     chrome.tabs.onCreated.addListener((tab) => {
@@ -275,5 +282,6 @@ if (chrome.extension.inIncognitoContext) {
     });
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
+        setBadgeText();
     });
 }
