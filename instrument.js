@@ -278,7 +278,7 @@ function instrument() {
 
       var msg = {
         operation: operation,
-        symbol: instrumentedVariableName,
+        name: instrumentedVariableName,
         value: serializeObject(value, !!logSettings.logFunctionsAsStrings),
         scriptUrl: callContext.scriptUrl,
         scriptLine: callContext.scriptLine,
@@ -319,7 +319,7 @@ function instrument() {
           serialArgs.push(serializeObject(args[i], !!logSettings.logFunctionsAsStrings));
         var msg = {
           operation: "call",
-          symbol: instrumentedFunctionName,
+          name: instrumentedFunctionName,
           args: serialArgs,
           value: "",
           scriptUrl: callContext.scriptUrl,

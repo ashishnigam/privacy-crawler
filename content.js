@@ -17,17 +17,13 @@ parent.insertBefore(scriptElement, parent.firstChild);
 var symbols_accessed = [];
 var symbolNames = {};
 
-function symbolKey(symbol) {
-    return '__URL__' + symbol.scriptUrl + '__NAME__' + symbol.name;
-}
-
 document.addEventListener(event_id, (e) => {
     e.detail.forEach((d) => {
         var key = symbolKey(d.content);
         if (!(key in symbolNames)) {
             symbolNames[key] = true;
             symbols_accessed.push({
-                name: d.content.symbol,
+                name: d.content.name,
                 scriptUrl: d.content.scriptUrl,
             });
         }
