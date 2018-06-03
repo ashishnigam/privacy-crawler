@@ -195,16 +195,15 @@ async function crawlMore() {
             [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
         } catch(e) {
             page.state = "error";
+            newPages = [];
             symbolsAccessed = [];
         } finally {
             page.state = page.state != "error" ? "crawled" : page.state;
         }
 
-        if (page.state != "error") {
-            newPages.forEach(function(page) {
-                allPages[page.url] = page;
-            });
-        }
+        newPages.forEach(function(page) {
+            allPages[page.url] = page;
+        });
 
         // Even in the case of error, cookies, might have changed
         var newCookies = await getNewCookies(page);
