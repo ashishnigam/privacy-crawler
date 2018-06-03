@@ -52,9 +52,9 @@ async function beginCrawl(url, maxDepth) {
     });
     startingPages = urls;
     var allCookies = await getCookies();
-    console.log("Deleting all cookies");
+    console.log("Privacy Crawler: Deleting all cookies");
     await Promise.all(allCookies.map(removeCookie));
-    console.log("All cookies deleted");
+    console.log("Privacy Crawler: All cookies deleted");
     crawlMore();
 }
 
@@ -96,8 +96,6 @@ function cookieKey(cookie) {
 }
 
 async function crawlPage(page) {
-    console.log("Starting Crawl --> "+JSON.stringify(page));
-
     var tabs = await tabQuery({active: true, currentWindow: true});
     chrome.tabs.update(tabs[0].id, {
         url: page.url
@@ -122,7 +120,6 @@ async function crawlPage(page) {
         }
     });
 
-    console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
     return [newPages, analysis.symbols_accessed];
 }
 
@@ -179,8 +176,11 @@ async function crawlMore() {
         var newPages;
         var symbolsAccessed;
         try {
+            console.log("Privacy Crawler: Crawling " + page.url);
             [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
+            console.log("Privacy Crawler: Crawled " + page.url);
         } catch(e) {
+            console.error("Privacy Crawler: Error crawling " + page.url, e);
             page.state = "error";
             newPages = [];
             symbolsAccessed = [];

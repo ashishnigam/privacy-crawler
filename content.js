@@ -38,7 +38,6 @@ var loaded = new Promise((resolve, reject) => {
 function onMessage(type) {
     return new Promise((resolve, reject) => {
         var listener = (message, sender, sendResponse) => {
-            console.log('Privacy Crawler: content script received message', message);
             if (message.type == type) {
                 resolve(message);
                 chrome.runtime.onMessage.removeListener(listener);
@@ -49,10 +48,12 @@ function onMessage(type) {
 }
 
 async function sendAnalysisOnNextRequest(type) {
+    console.log('Privacy Crawler: content script waiting for message');
     var requestPromise = onMessage('get_analysis');
     await loaded;
     await timeout(1000);
     var request = await requestPromise;
+    console.log('Privacy Crawler: content script received message', request);
 
     var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
         return a.href;
