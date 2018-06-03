@@ -47,3 +47,11 @@ function debounce(func, wait, immediate) {
     return result;
   };
 }
+
+function timeout(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve();
+        }, ms);
+    });
+}

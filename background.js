@@ -10,35 +10,34 @@ var appState = "stopped";
 
 // There are multiple content scripts, i.e. from iframes
 // so we need a bit of state to accumulate them
-var latestLinks = [];
-var latestSymbols = [];
-var messagesReceived = null;
+var _anaylses = {};
 
-chrome.runtime.onConnect.addListener((port) => {
-    port.onMessage.addListener((msg) => {
-        if (appState == 'stopped') return;
-
-        msg.links.forEach((link) => {
-            latestLinks.push(link);
-        });
-        msg.symbols_accessed.forEach((symbol) => {
-            latestSymbols.push(symbol);
-        });
-
-        messagesReceived();
-    });
+// We can't predict how many messages well have: one for each iframe
+// Hopefully it's reasonable to wait 500ms after each message to see
+// if more will appear.
+var _anaylsesDebounceTimeout = 500;
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type != 'get_analysis_response') return;
+    if (!(message.url in _anaylses)) return;
+    var url = message.url;
+    _anaylses[url] = _anaylses[url] || {};
+    _anaylses[url].links = (_anaylses[url].links || []).concat(message.links);
+    _anaylses[url].symbols_accessed = (_anaylses[url].symbols_accessed || []).concat(message.symbols_accessed);
+    _anaylses[url].done(_anaylses[url]);
 });
 
-function clearAnalysis() {
-    latestLinks = [];
-    latestSymbols = [];
-}
+function getAnalysis(tabId, url) {
+    _anaylses[url] = {};
+    sendMessage(tabId, {
+        type: 'get_analysis',
+        url: url
+    });
 
-function waitForAnalysis() {
     return new Promise((resolve, reject) => {
-        messagesReceived = debounce(() => {
-            resolve({links: latestLinks, symbols_accessed: latestSymbols})
-        }, 500);
+        _anaylses[url].done = debounce(() => {
+            resolve(_anaylses[url]);
+            delete _anaylses[url];
+        }, _anaylsesDebounceTimeout);
     });
 }
 
@@ -96,24 +95,21 @@ function cookieKey(cookie) {
     return  '___DOMAIN___' + cookie.domain + "___NAME___" + cookie.name + "___PATH___" + cookie.path;
 }
 
-async function crawlPage(page)
-{
+async function crawlPage(page) {
     console.log("Starting Crawl --> "+JSON.stringify(page));
-    clearAnalysis();
 
     var tabs = await tabQuery({active: true, currentWindow: true});
     chrome.tabs.update(tabs[0].id, {
         url: page.url
     });
+
     await onTabStatusComplete(tabs[0].id);
 
-    var response = await waitForAnalysis();
-    console.log('error',  chrome.runtime.lastError);
-    if (response == null) {
-        throw new Error('No response from page');
-    }
+    // Wait for page (and iframes) to load
+    await timeout(1000);
 
-    var newPages = (response && response.links ? response.links : []).filter(function(linkURL) {
+    var analysis = await getAnalysis(tabs[0].id, page.url);
+    var newPages = analysis.links.filter(function(linkURL) {
         var anyStartsWith = startingPages.some(function(startingPage) {
             return startsWith(linkURL, startingPage);
         });
@@ -127,7 +123,7 @@ async function crawlPage(page)
     });
 
     console.log("Page Crawled --> "+JSON.stringify({page:page, counts:newPages.length}));
-    return [newPages, response.symbols_accessed];
+    return [newPages, analysis.symbols_accessed];
 }
 
 async function getNewCookies(page) {

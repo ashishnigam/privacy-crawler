@@ -29,27 +29,43 @@ document.addEventListener(event_id, (e) => {
     });
 });
 
-function timeout(ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, ms);
-    });
-}
-
-var port = chrome.runtime.connect();
-
 var loaded = new Promise((resolve, reject) => {
     window.addEventListener('load', () => {
         resolve();
     });
 });
 
-loaded.then(() => {
-    return timeout(1000);
-}).then(() => {
+function onMessage(type) {
+    return new Promise((resolve, reject) => {
+        var listener = (message, sender, sendResponse) => {
+            console.log('Privacy Crawler: content script received message', message);
+            if (message.type == type) {
+                resolve(message);
+                chrome.runtime.onMessage.removeListener(listener);
+            }
+        }
+        chrome.runtime.onMessage.addListener(listener);
+    });
+}
+
+async function sendAnalysisOnNextRequest(type) {
+    var requestPromise = onMessage('get_analysis');
+    await loaded;
+    await timeout(1000);
+    var request = await requestPromise;
+
     var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
         return a.href;
     });
-    port.postMessage({links: links, symbols_accessed: symbols_accessed});
-});
+    console.log('Privacy Crawler: content script sending message');
+    chrome.runtime.sendMessage({
+        type: 'get_analysis_response',
+        url: request.url,
+        links: links,
+        symbols_accessed: symbols_accessed
+    });
+
+    symbols_accessed = [];
+    sendAnalysisOnNextRequest();
+}
+sendAnalysisOnNextRequest();
