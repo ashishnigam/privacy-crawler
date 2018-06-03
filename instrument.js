@@ -188,7 +188,7 @@ function instrument() {
       return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
     }
 
-    var urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+    var stackTraceUrlRegex = /(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*)):\d+:\d+/
     function getOriginatingScriptContext(getCallStack=false) {
       var trace = getStackTrace().trim().split('\n');
 
@@ -227,9 +227,9 @@ function instrument() {
         }
 
         var line = trace.find((line) => {
-          return line.match(urlRegex);
+          return line.match(stackTraceUrlRegex);
         });
-        var scriptUrl = line ? line.match(urlRegex)[0] : 'unknown';
+        var scriptUrl = line ? line.match(stackTraceUrlRegex)[1] : 'unknown';
 
         var callContext = {
           scriptUrl: scriptUrl,
