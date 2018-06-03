@@ -8,6 +8,8 @@ var startingPages = [];
 var latestUpdate = new Date();
 var appState = "stopped";
 
+var targetTabId = null;
+
 // There are multiple content scripts, i.e. from iframes
 // so we need a bit of state to accumulate them
 var _anaylses = {};
@@ -55,6 +57,10 @@ async function beginCrawl(url, maxDepth) {
     console.log("Privacy Crawler: Deleting all cookies");
     await Promise.all(allCookies.map(removeCookie));
     console.log("Privacy Crawler: All cookies deleted");
+
+    var tabs = await tabQuery({active: true, currentWindow: true});
+    targetTabId = tabs[0].id;
+
     crawlMore();
 }
 
@@ -96,17 +102,16 @@ function cookieKey(cookie) {
 }
 
 async function crawlPage(page) {
-    var tabs = await tabQuery({active: true, currentWindow: true});
-    chrome.tabs.update(tabs[0].id, {
+    chrome.tabs.update(targetTabId, {
         url: page.url
     });
 
-    await onTabStatusComplete(tabs[0].id);
+    await onTabStatusComplete(targetTabId);
 
     // Wait for page (and iframes) to load
     await timeout(1000);
 
-    var analysis = await getAnalysis(tabs[0].id, page.url);
+    var analysis = await getAnalysis(targetTabId, page.url);
     var newPages = analysis.links.filter(function(linkURL) {
         var anyStartsWith = startingPages.some(function(startingPage) {
             return startsWith(linkURL, startingPage);
