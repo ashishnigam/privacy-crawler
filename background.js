@@ -10,6 +10,10 @@ var appState = "stopped";
 
 var targetTabId = null;
 
+// If the tab isn't complete, or we get no response to messages
+// then we'll fail the page with an error
+var pageLoadTimeout = 10000;
+
 // There are multiple content scripts, i.e. from iframes
 // so we need a bit of state to accumulate them
 var _anaylses = {};
@@ -182,7 +186,7 @@ async function crawlMore() {
         var symbolsAccessed;
         try {
             console.log("Privacy Crawler: Crawling " + page.url);
-            [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(10000)]);
+            [newPages, symbolsAccessed] = await Promise.race([crawlPage(page), timeoutUntilReject(pageLoadTimeout)]);
             console.log("Privacy Crawler: Crawled " + page.url);
         } catch(e) {
             console.error("Privacy Crawler: Error crawling " + page.url, e);
