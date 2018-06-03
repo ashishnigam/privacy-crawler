@@ -9,6 +9,8 @@ The extension loads the page specified as the _root_ element, follows links recu
   - what cookies first appeared at what page, together with their domains, expiry times and values;
   - what Javascript is accessed that could be used to fingerprint the browser.
 
+![Privacy Crawler example popup](README-popup-example.png?raw=true)
+
 # What links are followed
 
 Only links that start with the _root_ are crawled. However, you can have muliple roots, seperating them with a comma.
