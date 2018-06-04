@@ -113,9 +113,7 @@ function instrument() {
       var trace = getStackTrace().trim().split('\n');
 
       // return a context object even if there is an error
-      var empty_context = {scriptUrl: "",scriptLine: "",
-                           scriptCol: "", funcName: "",
-                           scriptLocEval: "", callStack: "" };
+      var empty_context = {scriptUrl: ""};
       if (trace.length < 4) {
         return empty_context;
       }
@@ -159,12 +157,7 @@ function instrument() {
                         linePath  ? (window.location.href.split('/')[0] + linePath.match(stackTracePathRegex)[1]) :
                         lineLocal ? (window.location.href.split('#')[0]) : 'unknown';
         var callContext = {
-          scriptUrl: scriptUrl,
-          scriptLine: lineNo,
-          scriptCol: columnNo,
-          funcName: funcName,
-          scriptLocEval: scriptLocEval,
-          callStack: getCallStack ? trace.slice(3).join("\n").trim() : ""
+          scriptUrl: scriptUrl
         };
         return callContext;
       } catch (e) {
