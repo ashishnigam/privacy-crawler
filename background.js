@@ -226,6 +226,26 @@ async function crawlMore() {
             });
         });
 
+        var sortedAllValues = Object.values(allSymbols).sort((a, b) => {
+            var numExtraSuspiciousA = a.filter((symbol) => {
+                return isExtraSuspicious(symbol.name);
+            }).length;
+            var numA = a.length;
+            var numExtraSuspiciousB = b.filter((symbol) => {
+                return isExtraSuspicious(symbol.name);
+            }).length;
+            var numB = b.length;
+            return numExtraSuspiciousA < numExtraSuspiciousB ? -1 :
+                   numExtraSuspiciousA > numExtraSuspiciousB ?  1 :
+                   numA < numB                               ? -1 :
+                   numA > numB                               ? -1 :
+                   a[0].scriptUrl < b[0].scriptUrl           ? -1 :
+                   a[0].scriptUrl > b[0].scriptUrl           ?  1 :
+                   a[0].firstSeen < b[0].firstSeen           ? -1 :
+                   a[0].firstSeen > b[0].firstSeen           ?  1 :
+                   0;
+        });
+
         latestUpdate = new Date();
     }
 
