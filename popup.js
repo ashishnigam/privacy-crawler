@@ -16,14 +16,20 @@ function delegate(element, event, selector, handler) {
     });
 }
 
+function haveSettingsChanged() {
+    return document.getElementById("crawUrl").value != settings.root ||
+           document.getElementById("maxDepth").value != settings.maxDepth;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     function submit() {
-        bgPage.appState == "paused"  ? bgPage.crawlMore() :
-        bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
-                                       bgPage.pause();
+         bgPage.appState == "paused" && !haveSettingsChanged()                                 ? bgPage.crawlMore() :
+        (bgPage.appState == "paused" && haveSettingsChanged()) || bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
+                                                                                                 bgPage.pause();
         refreshPage();    
     }
 
+    delegate(document.body, 'input', '#crawUrl, #maxDepth', refreshPage);
     delegate(document.body, 'keypress', '#crawUrl, #maxDepth', (e) => {
         var ENTER = 13;
         if (e.keyCode == ENTER) {
@@ -63,10 +69,10 @@ async function onLoad() {
 }
 
 function refreshPage() {
-    var crawlButtonText = bgPage.appState == "pausing" ? "Pausing..." :
-                          bgPage.appState == "paused"  ? "Resume"     :
-                          bgPage.appState == "stopped" ? "Crawl"      :
-                                                         "Pause";
+    var crawlButtonText =  bgPage.appState == "pausing"                                                           ? "Pausing..." :
+                           bgPage.appState == "paused" && !haveSettingsChanged()                                  ? "Resume"     :
+                          (bgPage.appState == "paused" &&  haveSettingsChanged()) || bgPage.appState == "stopped" ? "Crawl"      :
+                                                                                                                   "Pause";
     document.getElementById("crawlButton").innerText = crawlButtonText;
     var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
