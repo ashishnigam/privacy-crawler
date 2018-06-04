@@ -51,21 +51,17 @@ function instrument() {
   }
   // End of Debounce
 
-  // messages the injected script
   var send = (function () {
     var messages = [];
-    // debounce sending queued messages
     var _send = debounce(function () {
       document.dispatchEvent(new CustomEvent(event_id, {
         detail: messages
       }));
 
-      // clear the queue
       messages = [];
     }, 100);
 
     return function (msgType, msg) {
-      // queue the message
       messages.push({'type':msgType,'content':msg});
       _send();
     };
