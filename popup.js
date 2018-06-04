@@ -126,6 +126,7 @@ function reportStyle() {
         th {
           white-space: nowrap;
           padding: 3px 5px;
+          vertical-align: top;
         }
         tr:nth-child(even) > td {
           background: #f3f3f3;
@@ -135,6 +136,15 @@ function reportStyle() {
 }
 
 function reportContent(generated, cookies, symbols) {
+    var symbolsByScript = {};
+    symbols.forEach((symbol) => {
+        symbolsByScript[symbol.scriptUrl] = symbolsByScript[symbol.scriptUrl] || [];
+        symbolsByScript[symbol.scriptUrl].push(symbol);
+        console.log(symbol.name, symbolsByScript[symbol.scriptUrl] );
+    });
+    var symbolScripts = Object.keys(symbolsByScript);
+    console.log(symbols,symbolsByScript);
+
     return `
         <div class="report-root">
             <h1>Privacy Report</h1>
@@ -172,22 +182,26 @@ function reportContent(generated, cookies, symbols) {
             ` }
             <h2>Fingerprinting (${ symbols.length })</h2>
 
-            ${ symbols.length == 0 ? `
+            ${ symbolScripts.length == 0 ? `
                 <p>No data accessed that can be used to fingerprint</p>` : `
                 <table>
                 <thead>
                     <tr>
                         <th>name</th>
-                        <th>first seen at script</th>
-                        <th>first seen at page</th>
+                        <th>script</th>
+                        <th>first seen</th>
                     </tr>
                 </thead>
                 <tbody>
-                ${ symbols.map((symbol) => `
+                ${ symbolScripts.map((symbolScriptUrl) => `
                     <tr>
-                        <td>${ symbol['name'] }</td>
-                        <td>${ symbol['scriptUrl'] }</td>
-                        <td>${ symbol['firstSeen'] }</td>
+                        <td>
+                        ${ symbolsByScript[symbolScriptUrl].map((symbol) => `
+                            <div>${ symbol['name'] }</div>
+                        `).join('') }
+                        </td>
+                        <td>${ symbolScriptUrl }</td>
+                        <td>${ symbolsByScript[symbolScriptUrl][0]['firstSeen'] }</td>
                     </tr>
                     `).join('')
                 }
