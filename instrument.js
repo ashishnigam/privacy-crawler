@@ -189,6 +189,8 @@ function instrument() {
     }
 
     var stackTraceUrlRegex = /(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=,]*)):\d+:\d+/
+    var stackTracePathRegex = /\((\/.+):\d+:\d+\)/;
+    var stackTraceLocalRegex = /\((.+):\d+:\d+\)/;
     function getOriginatingScriptContext(getCallStack=false) {
       var trace = getStackTrace().trim().split('\n');
 
@@ -226,11 +228,18 @@ function instrument() {
           scriptLocEval = scriptFileName.slice(lineNoIdx+1, scriptFileName.length);
         }
 
-        var line = trace.find((line) => {
+        var lineUrl = trace.find((line) => {
           return line.match(stackTraceUrlRegex);
         });
-        var scriptUrl = line ? line.match(stackTraceUrlRegex)[1] : 'unknown';
-
+        var linePath = trace.find((line) => {
+          return line.match(stackTracePathRegex);
+        });
+        var lineLocal = trace.find((line) => {
+          return line.match(stackTraceLocalRegex);
+        });
+        var scriptUrl = lineUrl   ? lineUrl.match(stackTraceUrlRegex)[1] :
+                        linePath  ? (window.location.href.split('/')[0] + linePath.match(stackTracePathRegex)[1]) :
+                        lineLocal ? (window.location.href.split('#')[0]) : 'unknown';
         var callContext = {
           scriptUrl: scriptUrl,
           scriptLine: lineNo,
