@@ -431,12 +431,6 @@ function instrument() {
       });
     }
 
-    /*
-     * Start Instrumentation
-     */
-    // TODO: user should be able to choose what to instrument
-
-    // Access to navigator properties
     var navigatorProperties = [ "appCodeName", "appName", "appVersion",
                                 "buildID", "cookieEnabled", "doNotTrack",
                                 "geolocation", "language", "languages",
@@ -450,9 +444,6 @@ function instrument() {
       instrumentObjectProperty(window.navigator, "window.navigator", property);
     });
 
-    // Access to screen properties
-    //instrumentObject(window.screen, "window.screen");
-    // TODO: why do we instrument only two screen properties
     var screenProperties =  [ "pixelDepth", "colorDepth", "width", "height", "availWidth", "availHeight" ];
     screenProperties.forEach(function(property) {
       instrumentObjectProperty(window.screen, "window.screen", property);
@@ -471,12 +462,10 @@ function instrument() {
     });
     instrumentObject(window.Storage.prototype, "window.Storage");
 
-    // Access to document.cookie
     instrumentObjectProperty(window.document, "window.document", "cookie", {
       logCallStack: true
     });
 
-    // Access to canvas
     instrumentObject(window.HTMLCanvasElement.prototype,"HTMLCanvasElement");
 
     var excludedProperties = [ "quadraticCurveTo", "lineTo", "transform",
@@ -491,10 +480,8 @@ function instrument() {
 
     instrumentObjectProperty(window.Date.prototype, "window.Date", "getTimezoneOffset");
 
-    // Access to webRTC
     instrumentObject(window.RTCPeerConnection.prototype,"RTCPeerConnection");
 
-    // Access to Audio API
     instrumentObject(window.AudioContext.prototype, "AudioContext");
     instrumentObject(window.OfflineAudioContext.prototype, "OfflineAudioContext");
     instrumentObject(window.OscillatorNode.prototype, "OscillatorNode");
