@@ -17,12 +17,20 @@ function delegate(element, event, selector, handler) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    delegate(document.body, 'click', '#crawlButton', () => {
+    function submit() {
         bgPage.appState == "paused"  ? bgPage.crawlMore() :
         bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
                                        bgPage.pause();
-        refreshPage();
+        refreshPage();    
+    }
+
+    delegate(document.body, 'keypress', '#crawUrl, #maxDepth', (e) => {
+        var ENTER = 13;
+        if (e.keyCode == ENTER) {
+            submit();
+        }
     });
+    delegate(document.body, 'click', '#crawlButton', submit);
     delegate(document.body, 'click', '#resetButton', bgPage.reset);
 
     delegate(document.body, 'click', '.open-tab-button', (e) => {
@@ -143,7 +151,6 @@ function reportContent(generated, cookies, symbols) {
         console.log(symbol.name, symbolsByScript[symbol.scriptUrl] );
     });
     var symbolScripts = Object.keys(symbolsByScript);
-    console.log(symbols,symbolsByScript);
 
     return `
         <div class="report-root">
