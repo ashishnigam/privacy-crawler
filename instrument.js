@@ -629,7 +629,7 @@ function instrument() {
         {'excludedProperties': excludedProperties}
     );
 
-    instrumentObject(window.Date.prototype, "getTimezoneOffset");
+    instrumentObjectProperty(window.Date.prototype, "window.Date", "getTimezoneOffset");
 
     // Access to webRTC
     instrumentObject(window.RTCPeerConnection.prototype,"RTCPeerConnection");
