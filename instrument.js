@@ -255,7 +255,7 @@ function instrument() {
     function instrumentObjectProperty(object, objectName, propertyName, logSettings={}) {
 
       var propDesc = Object.getPropertyDescriptor(object, propertyName);
-      if (!propDesc){
+      if (!propDesc) {
         return;
       }
 
