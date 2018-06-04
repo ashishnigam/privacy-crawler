@@ -204,15 +204,8 @@ function instrument() {
       }
 
       var msg = {
-        operation: operation,
         name: instrumentedVariableName,
-        scriptUrl: callContext.scriptUrl,
-        scriptLine: callContext.scriptLine,
-        scriptCol: callContext.scriptCol,
-        funcName: callContext.funcName,
-        scriptLocEval: callContext.scriptLocEval,
-        callStack: callContext.callStack,
-        timeStamp: new Date().toISOString()
+        scriptUrl: callContext.scriptUrl
       };
 
       try {
@@ -240,15 +233,8 @@ function instrument() {
 
       try {
         var msg = {
-          operation: "call",
           name: instrumentedFunctionName,
-          scriptUrl: callContext.scriptUrl,
-          scriptLine: callContext.scriptLine,
-          scriptCol: callContext.scriptCol,
-          funcName: callContext.funcName,
-          scriptLocEval: callContext.scriptLocEval,
-          callStack: callContext.callStack,
-          timeStamp: new Date().toISOString()
+          scriptUrl: callContext.scriptUrl
         }
         send('logCall', msg);
       }
