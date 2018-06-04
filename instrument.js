@@ -13,7 +13,7 @@ function instrument() {
     return originalInterval(func, time/20);
   }
 
-  // Intrumentation injection code is based on OpenWPM, in-term based on privacybadgerfirefox
+  // Intrumentation injection code is based on OpenWPM, in-tern based on privacybadgerfirefox
   // https://github.com/EFForg/privacybadgerfirefox/blob/master/data/fingerprinting.js
 
   // from Underscore v1.6.0
