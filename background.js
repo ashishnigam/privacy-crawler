@@ -161,7 +161,8 @@ function getNewSymbols(page, symbols) {
         return {
             name: symbol.name,
             scriptUrl: symbol.scriptUrl,
-            firstSeen: page.url
+            firstSeen: page.url,
+            isExtraSuspicious: isExtraSuspicious(symbol.name)
         };
     });
 }
@@ -284,5 +285,24 @@ if (chrome.extension.inIncognitoContext) {
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
         setBadgeText();
+    });
+}
+
+// The report is ordered with these at the top
+var extraSuspicious = [
+    'AnalyserNode',
+    'AudioContext',
+    'CanvasRenderingContext2D',
+    'GainNode',
+    'HTMLCanvasElement',
+    'OfflineAudioContext',
+    'OscillatorNode',
+    'RTCPeerConnection',
+    'ScriptProcessorNode'
+];
+
+function isExtraSuspicious(name) {
+    return extraSuspicious.some((extraSuspiciousName) => {
+        return name.includes(extraSuspiciousName);
     });
 }

@@ -193,7 +193,11 @@ function reportContent(generated, cookies, symbols) {
                     <tr>
                         <td>
                         ${ symbols[symbolScriptUrl].map((symbol) => `
-                            <div>${ symbol['name'] }</div>
+                            <div>
+                                ${ bgPage.isExtraSuspicious(symbol['name']) ? '<strong>' : '' }
+                                ${ symbol['name'] }
+                                ${ bgPage.isExtraSuspicious(symbol['name']) ? '</strong>' : '' }
+                            </div>
                         `).join('') }
                         </td>
                         <td>${ symbolScriptUrl }</td>
