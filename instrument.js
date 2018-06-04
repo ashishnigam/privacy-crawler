@@ -77,7 +77,6 @@ function instrument() {
     console.log("Error stack: " + error.stack);
   }
 
-  // Helper to get originating script urls
   function getStackTrace() {
     var stack;
 
