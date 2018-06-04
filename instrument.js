@@ -119,7 +119,7 @@ function instrument() {
   var maxLogCount = 500;
   var logCounter = new Object();
   function updateCounterAndCheckIfOver(scriptUrl, symbol) {
-    var key = scriptUrl + '|' + symbol;
+    var key = '___URL___' + scriptUrl + '___SYMBOL___' + symbol;
     if ((key in logCounter) && (logCounter[key] >= maxLogCount)) {
       return true;
     } else if (!(key in logCounter)) {
