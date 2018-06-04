@@ -231,9 +231,9 @@ function instrument() {
 
     function instrumentObject(object, objectName, logSettings={}) {
       var properties = getPropertyNames(object);
+      var exclude = logSettings.excludedProperties || [];
       for (var i = 0; i < properties.length; i++) {
-        if (logSettings.excludedProperties &&
-            logSettings.excludedProperties.indexOf(properties[i]) > -1) {
+        if (exclude.indexOf(properties[i]) !== -1) {
           continue;
         }
         try {
