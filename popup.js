@@ -148,7 +148,6 @@ function reportContent(generated, cookies, symbols) {
     symbols.forEach((symbol) => {
         symbolsByScript[symbol.scriptUrl] = symbolsByScript[symbol.scriptUrl] || [];
         symbolsByScript[symbol.scriptUrl].push(symbol);
-        console.log(symbol.name, symbolsByScript[symbol.scriptUrl] );
     });
     var symbolScripts = Object.keys(symbolsByScript);
 
