@@ -71,6 +71,11 @@ function refreshPage() {
     var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
 
+    var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
+    document.getElementById("maxDepth").disabled = isDisabled;
+    document.getElementById("crawUrl").disabled = isDisabled;
+    document.getElementById("resetButton").disabled = isDisabled;
+
     var leftTabs = bgPage.tabs.slice(0, 1);
     var rightTabs = bgPage.tabs.slice(1);
 
