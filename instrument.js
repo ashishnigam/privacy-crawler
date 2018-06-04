@@ -265,49 +265,45 @@ function instrument() {
 
       Object.defineProperty(object, propertyName, {
         configurable: true,
-        get: (function() {
-          return function() {
-            var origProperty;
-            var callContext = getOriginatingScriptContext();
+        get: function() {
+          var origProperty;
+          var callContext = getOriginatingScriptContext();
 
-            if (originalGetter) {
-              origProperty = originalGetter.call(this);
-            } else if ('value' in propDesc) { 
-              origProperty = originalValue;
-            } else {
-              console.error("Property descriptor for", objectName + '.' + propertyName, "doesn't have getter or value?");
-              logValue(objectName + '.' + propertyName, callContext);
-              return;
-            }
-
-            if (typeof origProperty == 'function') {
-              logValue(objectName + '.' + propertyName, callContext);
-              return instrumentFunction(objectName, propertyName, origProperty, logSettings);
-            } else {
-              logValue(objectName + '.' + propertyName, callContext);
-              return origProperty;
-            }
-          }
-        })(),
-        set: (function() {
-          return function(value) {
-            var callContext = getOriginatingScriptContext();
-            var returnValue;
-
-            if (originalSetter) {
-              returnValue = originalSetter.call(this, value);
-            } else if ('value' in propDesc) {
-              originalValue = value;
-              returnValue = value;
-            } else {
-              console.error("Property descriptor for", objectName + '.' + propertyName, "doesn't have setter or value?");
-              returnValue = value;
-            }
-
+          if (originalGetter) {
+            origProperty = originalGetter.call(this);
+          } else if ('value' in propDesc) { 
+            origProperty = originalValue;
+          } else {
+            console.error("Property descriptor for", objectName + '.' + propertyName, "doesn't have getter or value?");
             logValue(objectName + '.' + propertyName, callContext);
-            return returnValue;
+            return;
           }
-        })()
+
+          if (typeof origProperty == 'function') {
+            logValue(objectName + '.' + propertyName, callContext);
+            return instrumentFunction(objectName, propertyName, origProperty, logSettings);
+          } else {
+            logValue(objectName + '.' + propertyName, callContext);
+            return origProperty;
+          }
+        },
+        set: function(value) {
+          var callContext = getOriginatingScriptContext();
+          var returnValue;
+
+          if (originalSetter) {
+            returnValue = originalSetter.call(this, value);
+          } else if ('value' in propDesc) {
+            originalValue = value;
+            returnValue = value;
+          } else {
+            console.error("Property descriptor for", objectName + '.' + propertyName, "doesn't have setter or value?");
+            returnValue = value;
+          }
+
+          logValue(objectName + '.' + propertyName, callContext);
+          return returnValue;
+        }
       });
     }
 
