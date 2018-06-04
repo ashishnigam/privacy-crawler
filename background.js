@@ -3,7 +3,7 @@ var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
 var allSymbolsSeen = {};
-var allSymbols = [];
+var allSymbols = {};
 var startingPages = [];
 var latestUpdate = new Date();
 var appState = "stopped";
@@ -208,9 +208,10 @@ async function crawlMore() {
             allCookies.push(cookie)
         });
 
-        var newSymbols = getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
+        getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
             allSymbolsSeen[symbolKey(symbol)] = true;
-            allSymbols.push(symbol);
+            allSymbols[symbol.scriptUrl] = allSymbols[symbol.scriptUrl] || [];
+            allSymbols[symbol.scriptUrl].push(symbol);
         });
 
         latestUpdate = new Date();
@@ -248,7 +249,7 @@ function reset() {
     allCookiesSeen = {};
     allCookies = [];
     allSymbolsSeen = {};
-    allSymbols = [];
+    allSymbols = {};
     refreshPage();
 }
 

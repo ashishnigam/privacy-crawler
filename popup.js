@@ -70,18 +70,13 @@ function refreshPage() {
     document.getElementById("crawlButton").innerText = crawlButtonText;
     var isDisabledCrawl = bgPage.appState == "pausing";
     document.getElementById("crawlButton").disabled = isDisabledCrawl;
-    
-    var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
-    document.getElementById("maxDepth").disabled = isDisabled;
-    document.getElementById("crawUrl").disabled = isDisabled;
-    document.getElementById("resetButton").disabled = isDisabled;
 
     var leftTabs = bgPage.tabs.slice(0, 1);
     var rightTabs = bgPage.tabs.slice(1);
 
     function tabhtml(tabs) {
         return tabs.map(function(tab) {
-            var count = tab == 'Report' ? (bgPage.allCookies.length + bgPage.allSymbols.length) : bgPage.getURLsInTab(tab).length;
+            var count = tab == 'Report' ? (bgPage.allCookies.length + Object.keys(bgPage.allSymbols).length) : bgPage.getURLsInTab(tab).length;
             var innerTxt = tab + " ("+ count +")";
             var isActive = tab == currentTab;
             var liTxt = isActive ? innerTxt : "<a href='#' class=\"open-tab-button\" data-tab=\""+ tab +"\">" + innerTxt + "</a>";
@@ -144,12 +139,7 @@ function reportStyle() {
 }
 
 function reportContent(generated, cookies, symbols) {
-    var symbolsByScript = {};
-    symbols.forEach((symbol) => {
-        symbolsByScript[symbol.scriptUrl] = symbolsByScript[symbol.scriptUrl] || [];
-        symbolsByScript[symbol.scriptUrl].push(symbol);
-    });
-    var symbolScripts = Object.keys(symbolsByScript);
+    var symbolScripts = Object.keys(symbols);
 
     return `
         <div class="report-root">
@@ -186,7 +176,7 @@ function reportContent(generated, cookies, symbols) {
                 </tbody>
                 </table>
             ` }
-            <h2>Fingerprinting (${ symbols.length })</h2>
+            <h2>Fingerprinting (${ symbolScripts.length })</h2>
 
             ${ symbolScripts.length == 0 ? `
                 <p>No data accessed that can be used to fingerprint</p>` : `
@@ -202,12 +192,12 @@ function reportContent(generated, cookies, symbols) {
                 ${ symbolScripts.map((symbolScriptUrl) => `
                     <tr>
                         <td>
-                        ${ symbolsByScript[symbolScriptUrl].map((symbol) => `
+                        ${ symbols[symbolScriptUrl].map((symbol) => `
                             <div>${ symbol['name'] }</div>
                         `).join('') }
                         </td>
                         <td>${ symbolScriptUrl }</td>
-                        <td>${ symbolsByScript[symbolScriptUrl][0]['firstSeen'] }</td>
+                        <td>${ symbols[symbolScriptUrl][0]['firstSeen'] }</td>
                     </tr>
                     `).join('')
                 }
