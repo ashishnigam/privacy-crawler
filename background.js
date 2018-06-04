@@ -215,6 +215,17 @@ async function crawlMore() {
             allSymbols[symbol.scriptUrl].push(symbol);
         });
 
+        // Sort each in place
+        Object.values(allSymbols).forEach((symbolList) => {
+            symbolList.sort((a, b) => {
+                return  isExtraSuspicious(a.name) && !isExtraSuspicious(b.name) ? -1 :
+                       !isExtraSuspicious(a.name) &&  isExtraSuspicious(b.name) ?  1 :
+                       a.name < b.name                                          ? -1 :
+                       a.name > b.name                                          ?  1 :
+                       0;
+            });
+        });
+
         latestUpdate = new Date();
     }
 
