@@ -59,3 +59,11 @@ function timeout(ms) {
 function symbolKey(symbol) {
     return '__URL__' + symbol.scriptUrl + '__NAME__' + symbol.name;
 }
+
+function uniq(a, keyFunc) {
+    var seen = {};
+    return a.filter(function(item) {
+        var key = keyFunc(item);
+        return (key in seen) ? false : (seen[key] = true);
+    });
+}
