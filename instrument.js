@@ -244,7 +244,7 @@ function instrument() {
       }
     }
 
-    function instrumentFunction(objectName, methodName, func, logSettings) {
+    function instrumentFunction(objectName, methodName, func) {
       return function () {
         var callContext = getOriginatingScriptContext();
         logCall(objectName + '.' + methodName, callContext);
@@ -281,7 +281,7 @@ function instrument() {
 
           if (typeof origProperty == 'function') {
             logValue(objectName + '.' + propertyName, callContext);
-            return instrumentFunction(objectName, propertyName, origProperty, logSettings);
+            return instrumentFunction(objectName, propertyName, origProperty);
           } else {
             logValue(objectName + '.' + propertyName, callContext);
             return origProperty;
