@@ -100,12 +100,6 @@ function instrument() {
       return stack;
     }
 
-    // from http://stackoverflow.com/a/5202185
-    String.prototype.rsplit = function(sep, maxsplit) {
-      var split = this.split(sep);
-      return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
-    }
-
     var stackTraceUrlRegex = /(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=,]*)):\d+:\d+/
     var stackTracePathRegex = /\((\/.+):\d+:\d+\)/;
     var stackTraceLocalRegex = /\((.+):\d+:\d+\)/;
