@@ -17,12 +17,14 @@ function delegate(element, event, selector, handler) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    delegate(document.body, 'click', '#crawlButton', () => {
+    function submit() {
         bgPage.appState == "paused"  ? bgPage.crawlMore() :
         bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
                                        bgPage.pause();
-        refreshPage();
-    });
+        refreshPage();    
+    }
+
+    delegate(document.body, 'click', '#crawlButton', submit);
     delegate(document.body, 'click', '#resetButton', bgPage.reset);
 
     delegate(document.body, 'click', '.open-tab-button', (e) => {
