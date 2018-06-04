@@ -112,38 +112,7 @@ function instrument() {
     function getOriginatingScriptContext(getCallStack=false) {
       var trace = getStackTrace().trim().split('\n');
 
-      // return a context object even if there is an error
-      var empty_context = {scriptUrl: ""};
-      if (trace.length < 4) {
-        return empty_context;
-      }
-      // 0, 1 and 2 are OpenWPM's own functions (e.g. getStackTrace), skip them.
-      var callSite = trace[3];
-      if (!callSite){
-        return empty_context;
-      }
-      /*
-       * Stack frame format is simply: FUNC_NAME@FILENAME:LINE_NO:COLUMN_NO
-       *
-       * If eval or Function is involved we have an additional part after the FILENAME, e.g.:
-       * FUNC_NAME@FILENAME line 123 > eval line 1 > eval:LINE_NO:COLUMN_NO
-       * or FUNC_NAME@FILENAME line 234 > Function:LINE_NO:COLUMN_NO
-       *
-       * We store the part between the FILENAME and the LINE_NO in scriptLocEval
-       */
-      try{
-        var scriptLocEval = ""; // for eval or Function calls
-        var callSiteParts = callSite.split(" at ");
-        var funcName = callSiteParts[0] || '';
-        var items = callSiteParts[1].rsplit(":", 2);
-        var columnNo = items[items.length-1];
-        var lineNo = items[items.length-2];
-        var scriptFileName = items[items.length-3] || '';
-        var lineNoIdx = scriptFileName.indexOf(" line ");  // line in the URL means eval or Function
-        if (lineNoIdx != -1) {
-          scriptLocEval = scriptFileName.slice(lineNoIdx+1, scriptFileName.length);
-        }
-
+      try {
         var lineUrl = trace.find((line) => {
           return line.match(stackTraceUrlRegex);
         });
@@ -162,7 +131,9 @@ function instrument() {
         return callContext;
       } catch (e) {
         console.log("Error parsing the script context", e, callSite);
-        return empty_context;
+        return {
+          scriptUrl: 'unknown'
+        };
       }
     }
 
