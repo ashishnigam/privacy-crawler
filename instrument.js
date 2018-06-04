@@ -629,6 +629,8 @@ function instrument() {
         {'excludedProperties': excludedProperties}
     );
 
+    instrumentObject(window.Date.prototype, "getTimezoneOffset");
+
     // Access to webRTC
     instrumentObject(window.RTCPeerConnection.prototype,"RTCPeerConnection");
 
