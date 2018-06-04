@@ -188,7 +188,9 @@ function instrument() {
       return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
     }
 
-    var urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+    var stackTraceUrlRegex = /(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=,]*)):\d+:\d+/
+    var stackTracePathRegex = /\((\/.+):\d+:\d+\)/;
+    var stackTraceLocalRegex = /\((.+):\d+:\d+\)/;
     function getOriginatingScriptContext(getCallStack=false) {
       var trace = getStackTrace().trim().split('\n');
 
@@ -226,11 +228,18 @@ function instrument() {
           scriptLocEval = scriptFileName.slice(lineNoIdx+1, scriptFileName.length);
         }
 
-        var line = trace.find((line) => {
-          return line.match(urlRegex);
+        var lineUrl = trace.find((line) => {
+          return line.match(stackTraceUrlRegex);
         });
-        var scriptUrl = line ? line.match(urlRegex)[0] : 'unknown';
-
+        var linePath = trace.find((line) => {
+          return line.match(stackTracePathRegex);
+        });
+        var lineLocal = trace.find((line) => {
+          return line.match(stackTraceLocalRegex);
+        });
+        var scriptUrl = lineUrl   ? lineUrl.match(stackTraceUrlRegex)[1] :
+                        linePath  ? (window.location.href.split('/')[0] + linePath.match(stackTracePathRegex)[1]) :
+                        lineLocal ? (window.location.href.split('#')[0]) : 'unknown';
         var callContext = {
           scriptUrl: scriptUrl,
           scriptLine: lineNo,
@@ -278,7 +287,7 @@ function instrument() {
 
       var msg = {
         operation: operation,
-        symbol: instrumentedVariableName,
+        name: instrumentedVariableName,
         value: serializeObject(value, !!logSettings.logFunctionsAsStrings),
         scriptUrl: callContext.scriptUrl,
         scriptLine: callContext.scriptLine,
@@ -319,7 +328,7 @@ function instrument() {
           serialArgs.push(serializeObject(args[i], !!logSettings.logFunctionsAsStrings));
         var msg = {
           operation: "call",
-          symbol: instrumentedFunctionName,
+          name: instrumentedFunctionName,
           args: serialArgs,
           value: "",
           scriptUrl: callContext.scriptUrl,

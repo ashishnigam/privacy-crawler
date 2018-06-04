@@ -55,3 +55,7 @@ function timeout(ms) {
         }, ms);
     });
 }
+
+function symbolKey(symbol) {
+    return '__URL__' + symbol.scriptUrl + '__NAME__' + symbol.name;
+}

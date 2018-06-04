@@ -156,7 +156,7 @@ async function getNewCookies(page) {
 
 function getNewSymbols(page, symbols) {
     return symbols.filter((symbol) => {
-        return !(symbol.name in allSymbolsSeen);
+        return !(symbolKey(symbol) in allSymbolsSeen);
     }).map((symbol) => {
         return {
             name: symbol.name,
@@ -209,7 +209,7 @@ async function crawlMore() {
         });
 
         var newSymbols = getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
-            allSymbolsSeen[symbol.name] = true;
+            allSymbolsSeen[symbolKey(symbol)] = true;
             allSymbols.push(symbol);
         });
 
