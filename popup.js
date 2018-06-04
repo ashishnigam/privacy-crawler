@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshPage();    
     }
 
+    delegate(document.body, 'keypress', '#crawUrl, #maxDepth', (e) => {
+        var ENTER = 13;
+        if (e.keyCode == ENTER) {
+            submit();
+        }
+    });
     delegate(document.body, 'click', '#crawlButton', submit);
     delegate(document.body, 'click', '#resetButton', bgPage.reset);
 
@@ -145,7 +151,6 @@ function reportContent(generated, cookies, symbols) {
         console.log(symbol.name, symbolsByScript[symbol.scriptUrl] );
     });
     var symbolScripts = Object.keys(symbolsByScript);
-    console.log(symbols,symbolsByScript);
 
     return `
         <div class="report-root">
