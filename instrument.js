@@ -523,6 +523,7 @@ function instrument() {
             // * Returned objects may be instrumented if recursive
             //   instrumentation is enabled and this isn't at the depth limit.
             if (typeof origProperty == 'function') {
+              logValue(objectName + '.' + propertyName, origProperty, "get", callContext, logSettings);
               return instrumentFunction(objectName, propertyName, origProperty, logSettings);
             } else if (typeof origProperty == 'object' &&
               !!logSettings.recursive &&
@@ -587,7 +588,9 @@ function instrument() {
                                 "onLine", "oscpu", "platform", "product",
                                 "productSub", "userAgent", "vendorSub",
                                 "vendor", "browserLanguage", "userLanguage",
-                                "appName", "cpuClass" , "mimeTypes", "plugins"];
+                                "appName", "cpuClass" , "mimeTypes", "plugins",
+                                "deviceMemory", "hardwareConcurrency",
+                                "maxTouchPoints"];
     navigatorProperties.forEach(function(property) {
       instrumentObjectProperty(window.navigator, "window.navigator", property);
     });
@@ -595,7 +598,7 @@ function instrument() {
     // Access to screen properties
     //instrumentObject(window.screen, "window.screen");
     // TODO: why do we instrument only two screen properties
-    var screenProperties =  [ "pixelDepth", "colorDepth", "width", "height" ];
+    var screenProperties =  [ "pixelDepth", "colorDepth", "width", "height", "availWidth", "availHeight" ];
     screenProperties.forEach(function(property) {
       instrumentObjectProperty(window.screen, "window.screen", property);
     });
@@ -605,7 +608,9 @@ function instrument() {
     // prototype must be instrumented instead. Unfortunately this fails to differentiate
     // between sessionStorage and localStorage. Instead, you'll have to look for a sequence
     // of a get for the localStorage object followed by a getItem/setItem for the Storage object.
-    var windowProperties = [ "name", "localStorage", "sessionStorage" ];
+    var windowProperties = [ "name", "localStorage", "sessionStorage",
+      "WebGLRenderingContext", "devicePixelRatio", "indexedDB", "openDatabase"
+    ];
     windowProperties.forEach(function(property) {
       instrumentObjectProperty(window, "window", property);
     });
