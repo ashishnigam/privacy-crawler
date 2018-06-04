@@ -245,6 +245,10 @@ async function crawlMore() {
                    a[0].firstSeen > b[0].firstSeen           ?  1 :
                    0;
         });
+        allSymbols = {};
+        sortedAllValues.forEach((symbols) => {
+            allSymbols[symbols[0].scriptUrl] = symbols;
+        });
 
         latestUpdate = new Date();
     }
