@@ -587,7 +587,7 @@ function instrument() {
                                 "onLine", "oscpu", "platform", "product",
                                 "productSub", "userAgent", "vendorSub",
                                 "vendor", "browserLanguage", "userLanguage",
-                                "appName", "cpuClass" ];
+                                "appName", "cpuClass" , "mimeTypes", "plugins"];
     navigatorProperties.forEach(function(property) {
       instrumentObjectProperty(window.navigator, "window.navigator", property);
     });
@@ -600,27 +600,6 @@ function instrument() {
       instrumentObjectProperty(window.screen, "window.screen", property);
     });
 
-    // Access to plugins
-    var pluginProperties = [ "name", "filename", "description", "version", "length"];
-      for (var i = 0; i < window.navigator.plugins.length; i++) {
-      let pluginName = window.navigator.plugins[i].name;
-      pluginProperties.forEach(function(property) {
-        instrumentObjectProperty(
-            window.navigator.plugins[pluginName],
-            "window.navigator.plugins[" + pluginName + "]", property);
-      });
-    }
-
-    // Access to MIMETypes
-    var mimeTypeProperties = [ "description", "suffixes", "type"];
-    for (var i = 0; i < window.navigator.mimeTypes.length; i++) {
-      let mimeTypeName = window.navigator.mimeTypes[i].type;
-      mimeTypeProperties.forEach(function(property) {
-        instrumentObjectProperty(
-            window.navigator.mimeTypes[mimeTypeName],
-            "window.navigator.mimeTypes[" + mimeTypeName + "]", property);
-      });
-    }
     // Name, localStorage, and sessionsStorage logging
     // Instrumenting window.localStorage directly doesn't seem to work, so the Storage
     // prototype must be instrumented instead. Unfortunately this fails to differentiate
@@ -649,6 +628,8 @@ function instrument() {
         "CanvasRenderingContext2D",
         {'excludedProperties': excludedProperties}
     );
+
+    instrumentObject(window.Date.prototype, "getTimezoneOffset");
 
     // Access to webRTC
     instrumentObject(window.RTCPeerConnection.prototype,"RTCPeerConnection");
