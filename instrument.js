@@ -196,7 +196,7 @@ function instrument() {
 
     // Rough implementations of Object.getPropertyDescriptor and Object.getPropertyNames
     // See http://wiki.ecmascript.org/doku.php?id=harmony:extended_object_api
-    Object.getPropertyDescriptor = function (subject, name) {
+    function getPropertyDescriptor(subject, name) {
       var pd = Object.getOwnPropertyDescriptor(subject, name);
       var proto = Object.getPrototypeOf(subject);
       while (pd === undefined && proto !== null) {
@@ -206,7 +206,7 @@ function instrument() {
       return pd;
     };
 
-    Object.getPropertyNames = function (subject, name) {
+    function getPropertyNames(subject, name) {
       var props = Object.getOwnPropertyNames(subject);
       var proto = Object.getPrototypeOf(subject);
       while (proto !== null) {
@@ -230,7 +230,7 @@ function instrument() {
     }
 
     function instrumentObject(object, objectName, logSettings={}) {
-      var properties = Object.getPropertyNames(object);
+      var properties = getPropertyNames(object);
       for (var i = 0; i < properties.length; i++) {
         if (logSettings.excludedProperties &&
             logSettings.excludedProperties.indexOf(properties[i]) > -1) {
@@ -254,7 +254,7 @@ function instrument() {
 
     function instrumentObjectProperty(object, objectName, propertyName, logSettings={}) {
 
-      var propDesc = Object.getPropertyDescriptor(object, propertyName);
+      var propDesc = getPropertyDescriptor(object, propertyName);
       if (!propDesc) {
         return;
       }
