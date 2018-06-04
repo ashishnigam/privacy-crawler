@@ -235,9 +235,9 @@ async function crawlMore() {
                 return isExtraSuspicious(symbol.name);
             }).length;
             var numB = b.length;
-            return numExtraSuspiciousA < numExtraSuspiciousB ? -1 :
-                   numExtraSuspiciousA > numExtraSuspiciousB ?  1 :
-                   numA < numB                               ? -1 :
+            return numExtraSuspiciousA < numExtraSuspiciousB ?  1 :
+                   numExtraSuspiciousA > numExtraSuspiciousB ? -1 :
+                   numA < numB                               ?  1 :
                    numA > numB                               ? -1 :
                    a[0].scriptUrl < b[0].scriptUrl           ? -1 :
                    a[0].scriptUrl > b[0].scriptUrl           ?  1 :
