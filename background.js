@@ -3,7 +3,7 @@ var allPages = {};
 var allCookiesSeen = {};
 var allCookies = [];
 var allSymbolsSeen = {};
-var allSymbols = [];
+var allSymbols = {};
 var startingPages = [];
 var latestUpdate = new Date();
 var appState = "stopped";
@@ -161,7 +161,8 @@ function getNewSymbols(page, symbols) {
         return {
             name: symbol.name,
             scriptUrl: symbol.scriptUrl,
-            firstSeen: page.url
+            firstSeen: page.url,
+            isExtraSuspicious: isExtraSuspicious(symbol.name)
         };
     });
 }
@@ -208,9 +209,41 @@ async function crawlMore() {
             allCookies.push(cookie)
         });
 
-        var newSymbols = getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
+        getNewSymbols(page, symbolsAccessed).forEach((symbol) => {
             allSymbolsSeen[symbolKey(symbol)] = true;
-            allSymbols.push(symbol);
+            allSymbols[symbol.scriptUrl] = allSymbols[symbol.scriptUrl] || [];
+            allSymbols[symbol.scriptUrl].push(symbol);
+        });
+
+        // Sort each in place
+        Object.values(allSymbols).forEach((symbolList) => {
+            symbolList.sort((a, b) => {
+                return  isExtraSuspicious(a.name) && !isExtraSuspicious(b.name) ? -1 :
+                       !isExtraSuspicious(a.name) &&  isExtraSuspicious(b.name) ?  1 :
+                       a.name < b.name                                          ? -1 :
+                       a.name > b.name                                          ?  1 :
+                       0;
+            });
+        });
+
+        var sortedAllValues = Object.values(allSymbols).sort((a, b) => {
+            var numExtraSuspiciousA = a.filter((symbol) => {
+                return isExtraSuspicious(symbol.name);
+            }).length;
+            var numA = a.length;
+            var numExtraSuspiciousB = b.filter((symbol) => {
+                return isExtraSuspicious(symbol.name);
+            }).length;
+            var numB = b.length;
+            return numExtraSuspiciousA < numExtraSuspiciousB ? -1 :
+                   numExtraSuspiciousA > numExtraSuspiciousB ?  1 :
+                   numA < numB                               ? -1 :
+                   numA > numB                               ? -1 :
+                   a[0].scriptUrl < b[0].scriptUrl           ? -1 :
+                   a[0].scriptUrl > b[0].scriptUrl           ?  1 :
+                   a[0].firstSeen < b[0].firstSeen           ? -1 :
+                   a[0].firstSeen > b[0].firstSeen           ?  1 :
+                   0;
         });
 
         latestUpdate = new Date();
@@ -248,7 +281,7 @@ function reset() {
     allCookiesSeen = {};
     allCookies = [];
     allSymbolsSeen = {};
-    allSymbols = [];
+    allSymbols = {};
     refreshPage();
 }
 
@@ -283,5 +316,24 @@ if (chrome.extension.inIncognitoContext) {
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
         setBadgeText();
+    });
+}
+
+// The report is ordered with these at the top
+var extraSuspicious = [
+    'AnalyserNode',
+    'AudioContext',
+    'CanvasRenderingContext2D',
+    'GainNode',
+    'HTMLCanvasElement',
+    'OfflineAudioContext',
+    'OscillatorNode',
+    'RTCPeerConnection',
+    'ScriptProcessorNode'
+];
+
+function isExtraSuspicious(name) {
+    return extraSuspicious.some((extraSuspiciousName) => {
+        return name.includes(extraSuspiciousName);
     });
 }
