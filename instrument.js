@@ -43,7 +43,7 @@ function instrument() {
         result = func.apply(context, args);
         if (!timeout) context = args = null;
       } else if (!timeout && options.trailing !== false) {
-        timeout = setTimeout(later, remaining);
+        timeout = originalTimeout(later, remaining);
       }
       return result;
     };
