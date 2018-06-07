@@ -30,6 +30,12 @@ This extension also patches the Javascript environment to
 
 Therefore it's recommended to only have this extension enabled when you are crawling.
 
+# Zipping for the Web Store
+
+```
+zip -r app.zip . -x .git\* README\* \*.DS_Store*
+```
+
 # Attributions
 
 The "paws" logos are adapted from "Track by Vladimir Belochkin from the Noun Project"
