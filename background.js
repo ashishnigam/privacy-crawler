@@ -6,7 +6,8 @@ var allSymbolsSeen = {};
 var allSymbols = {};
 var startingPages = [];
 var latestUpdate = new Date();
-var appState = "stopped";
+var appState;
+setAppState("stopped");
 
 var targetTabId = null;
 
@@ -49,7 +50,8 @@ function getAnalysis(tabId, url) {
 
 async function beginCrawl(url, maxDepth) { 
     reset();    
-    appState = "crawling";
+    setAppState("crawling");
+
     settings.root = url;
     settings.maxDepth = maxDepth;
     var urls = url.split(',');
@@ -268,18 +270,18 @@ function getURLsInTab(tab) {
 }
 
 function pause() {
-    appState = "pausing";
+    setAppState("pausing");
     refreshPage();
 }
 
 function stop() {
-    appState = "stopped";
+    setAppState("stopped");
     refreshPage();
 }
 
 function reset() {
     console.log('resetting');
-    appState = "stopped";
+    setAppState("stopped");
 
     allPages = {};  
     allCookiesSeen = {};
@@ -287,6 +289,10 @@ function reset() {
     allSymbolsSeen = {};
     allSymbols = {};
     refreshPage();
+}
+
+function setAppState(newState) {
+    appState = newState;
 }
 
 function setBadgeText() {
