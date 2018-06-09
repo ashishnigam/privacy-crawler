@@ -20,7 +20,6 @@
    },
    "name": "Privacy Crawler",
    "permissions": [
-      "activeTab",
       "cookies",
       "downloads",
       "tabs",
