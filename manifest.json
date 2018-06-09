@@ -21,7 +21,6 @@
    "name": "Privacy Crawler",
    "permissions": [
       "activeTab",
-      "clipboardWrite",
       "cookies",
       "downloads",
       "tabs",
