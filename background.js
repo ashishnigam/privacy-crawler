@@ -290,8 +290,13 @@ function reset() {
 
 function setAppState(newState) {
     appState = newState;
-    chrome.storage.local.set({'app_state': appState});
+    if (targetTabId) {
+        chrome.tabs.sendMessage(targetTabId, {message: "app_state", app_state: appState});
+    }
 }
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.message == 'app_state_request') sendResponse(appState);
+});
 
 function setBadgeText() {
     var text = appState == 'crawling' || appState == 'pausing' ? '▶' : '';

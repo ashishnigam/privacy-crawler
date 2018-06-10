@@ -80,13 +80,13 @@ function disablePatching() {
 function shouldDisable(appState) {
     return appState == 'stopped' || appState == 'paused';
 }
-chrome.storage.local.get(['app_state'], function(result) {
-    if (shouldDisable(result)) {
+chrome.runtime.sendMessage({message: 'app_state_request'}, (app_state) => {
+    if (shouldDisable(app_state)) {
         disablePatching();
     }
 });
-chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace == 'local' && ('app_state' in changes) && shouldDisable(changes.app_state.newValue)) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.message == 'app_state' && shouldDisable(request.app_state)) {
         disablePatching();
     }
 });

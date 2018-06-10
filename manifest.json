@@ -23,7 +23,6 @@
       "cookies",
       "downloads",
       "tabs",
-      "storage",
       "http://*/*",
       "https://*/*"
    ],   
