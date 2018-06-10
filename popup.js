@@ -10,6 +10,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message == 'refresh_page') refreshPage();
 });
 
+async function getTab(tabId) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.get(tabId, resolve);
+    });
+}
+
 function delegate(element, event, selector, handler) {
     element.addEventListener(event, function(e) {
         for (var target = e.target; target && target != element; target = target.parentNode) {
@@ -22,27 +28,27 @@ function delegate(element, event, selector, handler) {
 }
 
 function haveSettingsChanged() {
-    return document.getElementById("crawUrl").value != settings.root ||
-           document.getElementById("maxDepth").value != settings.maxDepth;
+    return document.getElementById("crawl-url").value != settings.root ||
+           document.getElementById("max-depth").value != settings.maxDepth;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     function submit() {
          bgPage.appState == "paused" && !haveSettingsChanged()                                 ? bgPage.crawlMore() :
-        (bgPage.appState == "paused" && haveSettingsChanged()) || bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawUrl").value, parseInt(document.getElementById("maxDepth").value)) :
+        (bgPage.appState == "paused" && haveSettingsChanged()) || bgPage.appState == "stopped" ? bgPage.beginCrawl(document.getElementById("crawl-url").value, parseInt(document.getElementById("max-depth").value)) :
                                                                                                  bgPage.pause();
         refreshPage();    
     }
 
-    delegate(document.body, 'input', '#crawUrl, #maxDepth', refreshPage);
-    delegate(document.body, 'keypress', '#crawUrl, #maxDepth', (e) => {
+    delegate(document.body, 'input', '#crawl-url, #max-depth', refreshPage);
+    delegate(document.body, 'keypress', '#crawl-url, #max-depth', (e) => {
         var ENTER = 13;
         if (e.keyCode == ENTER) {
             submit();
         }
     });
-    delegate(document.body, 'click', '#crawlButton', submit);
-    delegate(document.body, 'click', '#resetButton', bgPage.reset);
+    delegate(document.body, 'click', '#crawl-button', submit);
+    delegate(document.body, 'click', '#reset-button', bgPage.reset);
 
     delegate(document.body, 'click', '.open-tab-button', (e) => {
         e.preventDefault();
@@ -63,13 +69,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    delegate(document.body, 'click', '#set-to-current-page-button', async function () {
+        tab = await getTab(bgPage.targetTabId);
+        document.getElementById("crawl-url").value = tab.url;
+    });
+
     onLoad();
 }, false);
 
 async function onLoad() {   
     var url = settings.root ? settings.root : (await tabQuery({active: true, currentWindow: true}))[0].url;
-    document.getElementById("crawUrl").value = url;
-    document.getElementById("maxDepth").value = settings.maxDepth;
+    document.getElementById("crawl-url").value = url;
+    document.getElementById("max-depth").value = settings.maxDepth;
     refreshPage();
 }
 
@@ -78,14 +89,14 @@ function refreshPage() {
                            bgPage.appState == "paused" && !haveSettingsChanged()                                  ? "Resume"     :
                           (bgPage.appState == "paused" &&  haveSettingsChanged()) || bgPage.appState == "stopped" ? "Crawl"      :
                                                                                                                    "Pause";
-    document.getElementById("crawlButton").innerText = crawlButtonText;
+    document.getElementById("crawl-button").innerText = crawlButtonText;
     var isDisabledCrawl = bgPage.appState == "pausing";
-    document.getElementById("crawlButton").disabled = isDisabledCrawl;
+    document.getElementById("crawl-button").disabled = isDisabledCrawl;
 
     var isDisabled = bgPage.getURLsInTab("Crawling").length > 0;
-    document.getElementById("maxDepth").disabled = isDisabled;
-    document.getElementById("crawUrl").disabled = isDisabled;
-    document.getElementById("resetButton").disabled = isDisabled;
+    document.getElementById("max-depth").disabled = isDisabled;
+    document.getElementById("crawl-url").disabled = isDisabled;
+    document.getElementById("reset-button").disabled = isDisabled;
 
     var leftTabs = bgPage.tabs.slice(0, 1);
     var rightTabs = bgPage.tabs.slice(1);
@@ -106,7 +117,7 @@ function refreshPage() {
     document.getElementById("tab-content").innerHTML = '';
     document.getElementById("tab-content").appendChild(currentTab != 'Report' ? (function () {
         var list = document.createElement('ul');
-        list.setAttribute('id', 'urlsBeingSearched');
+        list.setAttribute('id', 'urls-being-searched');
         list.innerHTML = bgPage.getURLsInTab(currentTab).map((page) => {
             return "<li><a href=\"" + page.url + "\" class=\"link\">" + page.url + "</a></li>";
         }).join('');
