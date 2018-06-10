@@ -64,9 +64,6 @@ async function beginCrawl(url, maxDepth) {
     await Promise.all(allCookies.map(removeCookie));
     console.log("Privacy Crawler: All cookies deleted");
 
-    var tabs = await tabQuery({active: true, currentWindow: true});
-    targetTabId = tabs[0].id;
-
     crawlMore();
 }
 
