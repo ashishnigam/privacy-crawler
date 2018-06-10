@@ -1,5 +1,7 @@
 function instrument() {
 
+  var event_id = document.currentScript.getAttribute('data-event-id');
+
   // Monkey patch the environment to speed up time, since some
   // tracking pixels and fingerprinting javascript only runs
   // after a delay
@@ -64,8 +66,6 @@ function instrument() {
       _send();
     };
   }());
-
-  var event_id = document.currentScript.getAttribute('data-event-id');
 
   function logErrorToConsole(error) {
     console.log("Error name: " + error.name);
