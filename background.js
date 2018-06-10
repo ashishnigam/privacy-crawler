@@ -317,6 +317,9 @@ if (chrome.extension.inIncognitoContext) {
         setBadgeText();
     })();
 
+    chrome.tabs.onActivated.addListener((tab) => {
+        setLightIcon(tab.id);
+    });
     chrome.tabs.onCreated.addListener((tab) => {
         setLightIcon(tab.id);
     });
