@@ -253,7 +253,7 @@ async function crawlMore() {
     }
 
     // We are either finished, or we have paused
-    appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
+    setAppState((appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped");
     refreshPage();
 }
 
@@ -290,6 +290,7 @@ function reset() {
 
 function setAppState(newState) {
     appState = newState;
+    chrome.storage.local.set({'app_state': appState});
 }
 
 function setBadgeText() {

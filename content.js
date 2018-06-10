@@ -71,3 +71,22 @@ async function sendAnalysisOnNextRequest(type) {
     sendAnalysisOnNextRequest();
 }
 sendAnalysisOnNextRequest();
+
+// This could be an iframe loaded after we started pausing, so we continue
+// until we've stopped
+function disablePatching() {
+    document.dispatchEvent(new CustomEvent(event_id + '-patching-disable'))
+}
+function shouldDisable(appState) {
+    return appState == 'stopped' || appState == 'paused';
+}
+chrome.storage.local.get(['app_state'], function(result) {
+    if (shouldDisable(result)) {
+        disablePatching();
+    }
+});
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace == 'local' && ('app_state' in changes) && shouldDisable(changes.app_state.newValue)) {
+        disablePatching();
+    }
+});
