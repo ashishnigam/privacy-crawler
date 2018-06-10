@@ -1,6 +1,11 @@
 var currentTab = "Report";
 var bgPage = chrome.extension.getBackgroundPage();
 
+(async function() {
+    var tabs = await tabQuery({active: true, currentWindow: true});
+    bgPage.targetTabId = tabs[0].id
+})();
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message == 'refresh_page') refreshPage();
 });

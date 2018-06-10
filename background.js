@@ -6,7 +6,8 @@ var allSymbolsSeen = {};
 var allSymbols = {};
 var startingPages = [];
 var latestUpdate = new Date();
-var appState = "stopped";
+var appState;
+setAppState("stopped");
 
 var targetTabId = null;
 
@@ -49,7 +50,8 @@ function getAnalysis(tabId, url) {
 
 async function beginCrawl(url, maxDepth) { 
     reset();    
-    appState = "crawling";
+    setAppState("crawling");
+
     settings.root = url;
     settings.maxDepth = maxDepth;
     var urls = url.split(',');
@@ -61,9 +63,6 @@ async function beginCrawl(url, maxDepth) {
     console.log("Privacy Crawler: Deleting all cookies");
     await Promise.all(allCookies.map(removeCookie));
     console.log("Privacy Crawler: All cookies deleted");
-
-    var tabs = await tabQuery({active: true, currentWindow: true});
-    targetTabId = tabs[0].id;
 
     crawlMore();
 }
@@ -254,7 +253,7 @@ async function crawlMore() {
     }
 
     // We are either finished, or we have paused
-    appState = (appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped";
+    setAppState((appState == "pausing" && getURLsInTab("Queued").length) ? "paused" : "stopped");
     refreshPage();
 }
 
@@ -268,18 +267,18 @@ function getURLsInTab(tab) {
 }
 
 function pause() {
-    appState = "pausing";
+    setAppState("pausing");
     refreshPage();
 }
 
 function stop() {
-    appState = "stopped";
+    setAppState("stopped");
     refreshPage();
 }
 
 function reset() {
     console.log('resetting');
-    appState = "stopped";
+    setAppState("stopped");
 
     allPages = {};  
     allCookiesSeen = {};
@@ -287,6 +286,11 @@ function reset() {
     allSymbolsSeen = {};
     allSymbols = {};
     refreshPage();
+}
+
+function setAppState(newState) {
+    appState = newState;
+    chrome.storage.local.set({'app_state': appState});
 }
 
 function setBadgeText() {
@@ -314,12 +318,14 @@ if (chrome.extension.inIncognitoContext) {
         setBadgeText();
     })();
 
+    chrome.tabs.onActivated.addListener((tab) => {
+        setLightIcon(tab.id);
+    });
     chrome.tabs.onCreated.addListener((tab) => {
         setLightIcon(tab.id);
     });
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
-        setBadgeText();
     });
 }
 

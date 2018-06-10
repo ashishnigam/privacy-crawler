@@ -1,14 +1,30 @@
 function instrument() {
 
+  var event_id = document.currentScript.getAttribute('data-event-id');
+  var originalTimeout = setTimeout;
+  var originalInterval = setInterval;
+
+  // Not perfect: there could have been timeouts/intervals called
+  // before this. which would still be too fast, but better than
+  // nothing for now.
+  var disable_event = event_id + '-patching-disable'
+  var disable = () => {
+    window.setTimeout = originalTimeout;
+    window.setInterval = originalInterval;
+    document.removeEventListener(disable_event, disable);
+    console.debug("Privacy Crawler: Disabled setTimeout & setInterval patching");
+  }
+  document.addEventListener(disable_event, disable);
+
   // Monkey patch the environment to speed up time, since some
   // tracking pixels and fingerprinting javascript only runs
   // after a delay
-  var originalTimeout = setTimeout;
+
+  console.debug("Privacy Crawler: Enabled setTimeout & setInterval patching");
   window.setTimeout = function(func, time) {
     return originalTimeout(func, time/20);
   }
 
-  var originalInterval = setInterval;
   window.setInterval = function(func, time) {
     return originalInterval(func, time/20);
   }
@@ -64,8 +80,6 @@ function instrument() {
       _send();
     };
   }());
-
-  var event_id = document.currentScript.getAttribute('data-event-id');
 
   function logErrorToConsole(error) {
     console.log("Error name: " + error.name);

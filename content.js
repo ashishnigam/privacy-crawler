@@ -49,17 +49,17 @@ function onMessage(type) {
 }
 
 async function sendAnalysisOnNextRequest(type) {
-    console.log('Privacy Crawler: content script waiting for message');
+    console.debug('Privacy Crawler: content script waiting for message');
     var requestPromise = onMessage('get_analysis');
     await loaded;
     await timeout(1000);
     var request = await requestPromise;
-    console.log('Privacy Crawler: content script received message', request);
+    console.debug('Privacy Crawler: content script received message', request);
 
     var links = Array.from(document.body.getElementsByTagName("a")).map(function(a) {
         return a.href;
     });
-    console.log('Privacy Crawler: content script sending message');
+    console.debug('Privacy Crawler: content script sending message');
     chrome.runtime.sendMessage({
         type: 'get_analysis_response',
         url: request.url,
@@ -71,3 +71,22 @@ async function sendAnalysisOnNextRequest(type) {
     sendAnalysisOnNextRequest();
 }
 sendAnalysisOnNextRequest();
+
+// This could be an iframe loaded after we started pausing, so we continue
+// until we've stopped
+function disablePatching() {
+    document.dispatchEvent(new CustomEvent(event_id + '-patching-disable'))
+}
+function shouldDisable(appState) {
+    return appState == 'stopped' || appState == 'paused';
+}
+chrome.storage.local.get(['app_state'], function(result) {
+    if (shouldDisable(result)) {
+        disablePatching();
+    }
+});
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace == 'local' && ('app_state' in changes) && shouldDisable(changes.app_state.newValue)) {
+        disablePatching();
+    }
+});
