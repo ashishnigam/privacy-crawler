@@ -325,7 +325,6 @@ if (chrome.extension.inIncognitoContext) {
     });
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         setLightIcon(tab.id);
-        setBadgeText();
     });
 }
 
