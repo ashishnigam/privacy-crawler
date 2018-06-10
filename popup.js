@@ -10,6 +10,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message == 'refresh_page') refreshPage();
 });
 
+async function getTab(tabId) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.get(tabId, resolve);
+    });
+}
+
 function delegate(element, event, selector, handler) {
     element.addEventListener(event, function(e) {
         for (var target = e.target; target && target != element; target = target.parentNode) {
@@ -61,6 +67,11 @@ document.addEventListener('DOMContentLoaded', function() {
             url: reportDataUri(bgPage.latestUpdate, bgPage.allCookies, bgPage.allSymbols),
             filename: filename
         });
+    });
+
+    delegate(document.body, 'click', '#set-to-current-page-button', async function () {
+        tab = await getTab(bgPage.targetTabId);
+        document.getElementById("crawl-url").value = tab.url;
     });
 
     onLoad();
